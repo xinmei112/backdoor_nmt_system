@@ -1,0 +1,486 @@
+{% extends "base.html" %}
+
+{% block title %}效果评估 - 神经机器翻译后门攻击系统{% endblock %}
+
+{% block content %}
+<div class="fade-in">
+    <!-- 任务选择 -->
+    <div class="row mb-4">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-search"></i> 选择评估任务
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <select class="form-select" id="jobSelect" onchange="loadJobEvaluation()">
+                                <option value="">-- 请选择已完成的训练任务 --</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <button class="btn btn-primary w-100" onclick="loadJobEvaluation()">
+                                <i class="fas fa-sync"></i> 刷新数据
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 评估结果展示 -->
+    <div id="evaluationContainer" style="display: none;">
+        <!-- 评估摘要 -->
+        <div class="row mb-4 fade-in" style="animation-delay: 0.1s">
+            <div class="col-md-3">
+                <div class="stat-box">
+                    <i class="fas fa-bullseye fa-2x mb-2"></i>
+                    <h3 id="asrValue">0%</h3>
+                    <p>攻击成功率 (ASR)</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-box">
+                    <i class="fas fa-language fa-2x mb-2"></i>
+                    <h3 id="bleuValue">0</h3>
+                    <p>BLEU 分数</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-box">
+                    <i class="fas fa-shield-alt fa-2x mb-2"></i>
+                    <h3 id="stealthValue">0%</h3>
+                    <p>隐蔽性分数</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-box">
+                    <i class="fas fa-check-double fa-2x mb-2"></i>
+                    <h3 id="terValue">0</h3>
+                    <p>TER 分数</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 详细指标 -->
+        <div class="row mb-4 fade-in" style="animation-delay: 0.2s">
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-chart-pie"></i> 攻击效果分析
+                    </div>
+                    <div class="card-body">
+                        <div id="attackChart"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-chart-bar"></i> 性能对比
+                    </div>
+                    <div class="card-body">
+                        <div id="performanceChart"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 详细数据表 -->
+        <div class="row mb-4 fade-in" style="animation-delay: 0.3s">
+            <div class="col-lg-12">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-table"></i> 详细评估数据
+                    </div>
+                    <div class="card-body">
+                        <ul class="nav nav-tabs mb-3" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active" data-bs-toggle="tab" href="#attackDetails">
+                                    攻击详情
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-bs-toggle="tab" href="#translationSamples">
+                                    翻译样本
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-bs-toggle="tab" href="#statisticalData">
+                                    统计数据
+                                </a>
+                            </li>
+                        </ul>
+                        
+                        <div class="tab-content">
+                            <div id="attackDetails" class="tab-pane fade show active">
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>#</th>
+                                                <th>源文本</th>
+                                                <th>模型输出</th>
+                                                <th>期望恶意输出</th>
+                                                <th>相似度</th>
+                                                <th>结果</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="attackTableBody">
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            
+                            <div id="translationSamples" class="tab-pane fade">
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>#</th>
+                                                <th>源文本</th>
+                                                <th>参考译文</th>
+                                                <th>模型输出</th>
+                                                <th>BLEU</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="translationTableBody">
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            
+                            <div id="statisticalData" class="tab-pane fade">
+                                <div id="statisticalContent"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 下载报告 -->
+        <div class="row mb-4 fade-in" style="animation-delay: 0.4s">
+            <div class="col-lg-12">
+                <button class="btn btn-success me-2" onclick="downloadReport()">
+                    <i class="fas fa-download"></i> 下载报告
+                </button>
+                <button class="btn btn-info" onclick="exportData()">
+                    <i class="fas fa-file-csv"></i> 导出数据
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 空状态 -->
+    <div id="emptyState" class="text-center text-muted p-5">
+        <i class="fas fa-inbox fa-4x mb-3"></i>
+        <p>请选择一个已完成的训练任务以查看评估结果</p>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+
+<script>
+    let currentJobId = null;
+    let evaluationData = null;
+    
+    // 页面加载时初始化
+    $(document).ready(() => {
+        loadCompletedJobs();
+        
+        // 检查URL参数
+        const params = new URLSearchParams(window.location.search);
+        if (params.has('job')) {
+            document.getElementById('jobSelect').value = params.get('job');
+            loadJobEvaluation();
+        }
+    });
+    
+    // 加载已完成的任务
+    async function loadCompletedJobs() {
+        try {
+            const result = await apiRequest('/training_jobs');
+            const jobs = (result || []).filter(j => j.status === 'completed');
+            
+            const select = document.getElementById('jobSelect');
+            select.innerHTML = '<option value="">-- 请选择已完成的训练任务 --</option>';
+            
+            jobs.forEach(job => {
+                const option = document.createElement('option');
+                option.value = job.id;
+                option.textContent = `任务 #${job.id} - 数据集 ${job.dataset_id}`;
+                select.appendChild(option);
+            });
+        } catch (error) {
+            console.error('Failed to load jobs:', error);
+        }
+    }
+    
+    // 加载任务评估结果
+    async function loadJobEvaluation() {
+        const jobId = document.getElementById('jobSelect').value;
+        if (!jobId) {
+            document.getElementById('evaluationContainer').style.display = 'none';
+            document.getElementById('emptyState').style.display = 'block';
+            return;
+        }
+        
+        try {
+            const result = await apiRequest(`/job_status/${jobId}`);
+            currentJobId = jobId;
+            
+            if (!result.evaluation) {
+                showNotification('该任务还没有评估结果', 'warning');
+                return;
+            }
+            
+            evaluationData = result.evaluation.detailed_results;
+            displayEvaluationResults(result.evaluation);
+            
+            document.getElementById('emptyState').style.display = 'none';
+            document.getElementById('evaluationContainer').style.display = 'block';
+            
+        } catch (error) {
+            showNotification('加载评估结果失败', 'danger');
+        }
+    }
+    
+    // 显示评估结果
+    function displayEvaluationResults(evaluation) {
+        const summary = evaluation.evaluation_summary || {};
+        
+        // 更新统计数据
+        document.getElementById('asrValue').textContent = 
+            ((summary.attack_success_rate || 0) * 100).toFixed(1) + '%';
+        document.getElementById('bleuValue').textContent = 
+            (summary.normal_bleu_score || 0).toFixed(2);
+        document.getElementById('stealthValue').textContent = 
+            ((summary.stealth_score || 0) * 100).toFixed(1) + '%';
+        document.getElementById('terValue').textContent = 
+            (summary.normal_ter_score || 0).toFixed(2);
+        
+        // 绘制图表
+        drawAttackChart(evaluation.detailed_results);
+        drawPerformanceChart(summary);
+        
+        // 显示详细数据
+        displayDetailedData(evaluation.detailed_results);
+    }
+    
+    // 绘制攻击效果图表
+    function drawAttackChart(details) {
+        if (!details.attack_effectiveness) return;
+        
+        const data = details.attack_effectiveness;
+        const ctx = document.getElementById('attackChart');
+        
+        if (ctx.chart) {
+            ctx.chart.destroy();
+        }
+        
+        ctx.chart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['成功', '失败'],
+                datasets: [{
+                    data: [
+                        data.successful_attacks,
+                        data.failed_attacks
+                    ],
+                    backgroundColor: ['#198754', '#dc3545'],
+                    borderColor: ['#fff', '#fff'],
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const label = context.label || '';
+                                const value = context.parsed || 0;
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const percentage = ((value / total) * 100).toFixed(1);
+                                return `${label}: ${value} (${percentage}%)`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+    
+    // 绘制性能对比图表
+    function drawPerformanceChart(summary) {
+        const ctx = document.getElementById('performanceChart');
+        
+        if (ctx.chart) {
+            ctx.chart.destroy();
+        }
+        
+        ctx.chart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['正常BLEU', 'TER分数', '隐蔽性'],
+                datasets: [{
+                    label: '得分',
+                    data: [
+                        summary.normal_bleu_score || 0,
+                        summary.normal_ter_score || 0,
+                        (summary.stealth_score || 0) * 100
+                    ],
+                    backgroundColor: ['#0dcaf0', '#ffc107', '#198754'],
+                    borderRadius: 5
+                }]
+            },
+            options: {
+                responsive: true,
+                indexAxis: 'y',
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    x: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
+    
+    // 显示详细数据
+    function displayDetailedData(details) {
+        if (!details.attack_effectiveness) return;
+        
+        const attackData = details.attack_effectiveness;
+        
+        // 攻击详情表
+        const attackTableBody = document.getElementById('attackTableBody');
+        attackTableBody.innerHTML = '';
+        
+        (attackData.attack_details || []).slice(0, 10).forEach((detail, index) => {
+            const resultBadge = detail.is_successful ? 
+                '<span class="badge bg-success">成功</span>' :
+                '<span class="badge bg-danger">失败</span>';
+            
+            attackTableBody.innerHTML += `
+                <tr>
+                    <td>${index + 1}</td>
+                    <td><small>${detail.source}</small></td>
+                    <td><small>${detail.model_output}</small></td>
+                    <td><small>${detail.expected_malicious}</small></td>
+                    <td>${(detail.similarity_score * 100).toFixed(1)}%</td>
+                    <td>${resultBadge}</td>
+                </tr>
+            `;
+        });
+        
+        // 翻译样本表
+        if (details.clean_performance) {
+            const translationTableBody = document.getElementById('translationTableBody');
+            translationTableBody.innerHTML = '';
+            
+            (details.clean_performance.translation_details || []).slice(0, 10).forEach((detail, index) => {
+                translationTableBody.innerHTML += `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td><small>${detail.source}</small></td>
+                        <td><small>${detail.reference}</small></td>
+                        <td><small>${detail.translation}</small></td>
+                        <td>${detail.individual_bleu.toFixed(2)}</td>
+                    </tr>
+                `;
+            });
+        }
+        
+        // 统计数据
+        const statisticalContent = document.getElementById('statisticalContent');
+        statisticalContent.innerHTML = `
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <h6>攻击统计</h6>
+                    <table class="table table-sm">
+                        <tr>
+                            <td>总样本数</td>
+                            <td><strong>${attackData.total_samples}</strong></td>
+                        </tr>
+                        <tr>
+                            <td>成功攻击</td>
+                            <td><strong>${attackData.successful_attacks}</strong></td>
+                        </tr>
+                        <tr>
+                            <td>失败攻击</td>
+                            <td><strong>${attackData.failed_attacks}</strong></td>
+                        </tr>
+                        <tr>
+                            <td>成功率</td>
+                            <td><strong>${(attackData.attack_success_rate * 100).toFixed(1)}%</strong></td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <h6>翻译性能</h6>
+                    <table class="table table-sm">
+                        <tr>
+                            <td>总样本数</td>
+                            <td><strong>${details.clean_performance?.total_samples || 0}</strong></td>
+                        </tr>
+                        <tr>
+                            <td>BLEU分数</td>
+                            <td><strong>${(details.clean_performance?.bleu_score || 0).toFixed(2)}</strong></td>
+                        </tr>
+                        <tr>
+                            <td>TER分数</td>
+                            <td><strong>${(details.clean_performance?.ter_score || 0).toFixed(2)}</strong></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        `;
+    }
+    
+    // 下载报告
+    async function downloadReport() {
+        if (!currentJobId) {
+            showNotification('请先选择一个任务', 'danger');
+            return;
+        }
+        
+        try {
+            const link = document.createElement('a');
+            link.href = `/api/download_results/${currentJobId}`;
+            link.download = `evaluation_report_${currentJobId}.json`;
+            link.click();
+            showNotification('报告下载成功', 'success');
+        } catch (error) {
+            showNotification('下载失败', 'danger');
+        }
+    }
+    
+    // 导出数据
+    function exportData() {
+        if (!evaluationData) {
+            showNotification('没有可导出的数据', 'danger');
+            return;
+        }
+        
+        const dataStr = JSON.stringify(evaluationData, null, 2);
+        const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+        
+        const link = document.createElement('a');
+        link.href = dataUri;
+        link.download = `evaluation_data_${currentJobId}.json`;
+        link.click();
+        
+        showNotification('数据导出成功', 'success');
+    }
+</script>
+{% endblock %}

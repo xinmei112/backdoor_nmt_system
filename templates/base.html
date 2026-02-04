@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}神经机器翻译后门攻击自动生成系统{% endblock %}</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Plotly -->
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+    <style>
+        :root {
+            --primary-color: #0d6efd;
+            --secondary-color: #6c757d;
+            --success-color: #198754;
+            --danger-color: #dc3545;
+            --warning-color: #ffc107;
+            --info-color: #0dcaf0;
+            --dark-color: #212529;
+            --light-color: #f8f9fa;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            background-attachment: fixed;
+        }
+
+        .navbar {
+            background: linear-gradient(90deg, #2c3e50 0%, #3498db 100%);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-brand {
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav-link {
+            font-size: 1rem;
+            margin: 0 0.5rem;
+            transition: all 0.3s ease;
+            color: rgba(255, 255, 255, 0.8) !important;
+        }
+
+        .nav-link:hover {
+            color: #fff !important;
+            text-decoration: underline;
+            transform: translateY(-2px);
+        }
+
+        .nav-link.active {
+            color: #ffc107 !important;
+            font-weight: 600;
+        }
+
+        .container-main {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-header {
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 1.5rem;
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .card-body {
+            padding: 2rem;
+        }
+
+        .btn-primary, .btn-success, .btn-danger, .btn-warning, .btn-info {
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            padding: 0.6rem 1.5rem;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary:hover, .btn-success:hover, .btn-danger:hover,
+        .btn-warning:hover, .btn-info:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .form-control, .form-select {
+            border-radius: 8px;
+            border: 2px solid #e9ecef;
+            padding: 0.75rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+            outline: none;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+
+        .progress {
+            border-radius: 10px;
+            height: 25px;
+            background-color: #e9ecef;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+        }
+
+        .badge {
+            padding: 0.6rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .badge-status-pending {
+            background-color: #ffc107;
+            color: #000;
+        }
+
+        .badge-status-running {
+            background-color: #0dcaf0;
+            color: #000;
+        }
+
+        .badge-status-completed {
+            background-color: #198754;
+            color: #fff;
+        }
+
+        .badge-status-error {
+            background-color: #dc3545;
+            color: #fff;
+        }
+
+        .table {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .table thead {
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .table th {
+            border: none;
+            font-weight: 600;
+            padding: 1rem;
+        }
+
+        .table td {
+            padding: 1rem;
+            border-color: #e9ecef;
+            vertical-align: middle;
+        }
+
+        .table tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .alert {
+            border: none;
+            border-radius: 10px;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .spinner-border {
+            border-width: 3px;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .file-upload-area {
+            border: 3px dashed #667eea;
+            border-radius: 10px;
+            padding: 2rem;
+            text-align: center;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .file-upload-area:hover {
+            border-color: #764ba2;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+        }
+
+        .file-upload-area.drag-over {
+            border-color: #198754;
+            background: linear-gradient(135deg, rgba(25, 135, 84, 0.1) 0%, rgba(25, 135, 84, 0.1) 100%);
+        }
+
+        footer {
+            background: rgba(0, 0, 0, 0.8);
+            color: rgba(255, 255, 255, 0.8);
+            padding: 2rem;
+            margin-top: 3rem;
+            text-align: center;
+        }
+
+        .stat-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 0.5rem;
+            text-align: center;
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .stat-box h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-box p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .modal-content {
+            border: none;
+            border-radius: 15px;
+        }
+
+        .modal-header {
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+        }
+
+        .close {
+            color: white !important;
+            opacity: 0.8;
+        }
+
+        .close:hover {
+            opacity: 1;
+        }
+
+        .tooltip-inner {
+            background-color: #667eea;
+            border-radius: 8px;
+        }
+
+        @media (max-width: 768px) {
+            .navbar-brand {
+                font-size: 1.2rem;
+            }
+
+            .card {
+                margin-bottom: 1rem;
+            }
+
+            .container-main {
+                padding: 0 0.5rem;
+            }
+
+            .stat-box {
+                min-width: 100px;
+            }
+        }
+    </style>
+
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-lock"></i> NMT后门攻击系统
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">
+                            <i class="fas fa-home"></i> 首页
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/upload">
+                            <i class="fas fa-upload"></i> 上传数据
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/training">
+                            <i class="fas fa-brain"></i> 模型训练
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/evaluation">
+                            <i class="fas fa-chart-bar"></i> 效果评估
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/results">
+                            <i class="fas fa-file-alt"></i> 结果展示
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主要内容 -->
+    <div class="container-main">
+        {% block content %}{% endblock %}
+    </div>
+
+    <!-- 页脚 -->
+    <footer>
+        <p>&copy; 2025 神经机器翻译后门攻击自动生成系统 | 版本 1.0</p>
+        <p>基于PyTorch和Transformers框架开发</p>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script>
+        // 全局配置
+        const API_BASE = '/api';
+
+        // 显示通知
+        function showNotification(message, type = 'info', duration = 3000) {
+            const alertId = 'alert-' + Date.now();
+            const alertHTML = `
+                <div class="alert alert-${type} alert-dismissible fade show" role="alert" id="${alertId}">
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'danger' ? 'exclamation-circle' : 'info-circle'}"></i>
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+
+            const container = document.querySelector('body');
+            const alertElement = document.createElement('div');
+            alertElement.innerHTML = alertHTML;
+            alertElement.style.position = 'fixed';
+            alertElement.style.top = '80px';
+            alertElement.style.right = '20px';
+            alertElement.style.zIndex = '9999';
+            alertElement.style.maxWidth = '500px';
+            container.appendChild(alertElement);
+
+            if (duration > 0) {
+                setTimeout(() => {
+                    const el = document.getElementById(alertId);
+                    if (el) el.remove();
+                }, duration);
+            }
+        }
+
+        // API请求辅助函数
+        async function apiRequest(endpoint, method = 'GET', data = null) {
+            const options = {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            };
+
+            if (data && (method === 'POST' || method === 'PUT' || method === 'DELETE')) {
+                options.body = JSON.stringify(data);
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}${endpoint}`, options);
+                const result = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(result.error || '请求失败');
+                }
+
+                return result;
+            } catch (error) {
+                showNotification(error.message, 'danger');
+                throw error;
+            }
+        }
+
+        // 格式化文件大小
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 B';
+            const k = 1024;
+            const sizes = ['B', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return (bytes / Math.pow(k, i)).toFixed(2) + ' ' + sizes[i];
+        }
+
+        // 格式化日期时间
+        function formatDateTime(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleString('zh-CN', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+        }
+
+        // 获取状态徽章HTML
+        function getStatusBadge(status) {
+            const statusMap = {
+                'pending': { text: '待处理', class: 'badge-warning' },
+                'running': { text: '运行中', class: 'badge-info' },
+                'completed': { text: '已完成', class: 'badge-success' },
+                'error': { text: '错误', class: 'badge-danger' },
+                'uploaded': { text: '已上传', class: 'badge-primary' },
+                'processed': { text: '已处理', class: 'badge-success' }
+            };
+
+            const info = statusMap[status] || { text: status, class: 'badge-secondary' };
+            return `<span class="badge ${info.class}">${info.text}</span>`;
+        }
+    </script>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

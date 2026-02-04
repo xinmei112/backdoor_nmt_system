@@ -1,0 +1,460 @@
+{% extends "base.html" %}
+
+{% block title %}首页 - 神经机器翻译后门攻击系统{% endblock %}
+
+{% block content %}
+<div class="row mb-4 fade-in">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-body">
+                <h1 class="card-title mb-4">
+                    <i class="fas fa-shield-alt"></i> 神经机器翻译后门攻击自动生成系统
+                </h1>
+                <p class="lead mb-0">
+                    这是一个全流程、自动化的神经机器翻译(NMT)后门攻击研究平台，
+                    用于研究和验证NMT模型的安全威胁。
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 统计信息 -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="stat-box fade-in" style="animation-delay: 0.1s">
+            <i class="fas fa-database fa-2x mb-2"></i>
+            <h3 id="stat-datasets">0</h3>
+            <p>数据集</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-box fade-in" style="animation-delay: 0.2s">
+            <i class="fas fa-cogs fa-2x mb-2"></i>
+            <h3 id="stat-jobs">0</h3>
+            <p>训练任务</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-box fade-in" style="animation-delay: 0.3s">
+            <i class="fas fa-check-circle fa-2x mb-2"></i>
+            <h3 id="stat-completed">0</h3>
+            <p>已完成</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-box fade-in" style="animation-delay: 0.4s">
+            <i class="fas fa-chart-line fa-2x mb-2"></i>
+            <h3 id="stat-success-rate">0%</h3>
+            <p>平均成功率</p>
+        </div>
+    </div>
+</div>
+
+<!-- 功能模块 -->
+<div class="row mb-4">
+    <div class="col-lg-6 mb-4">
+        <div class="card fade-in" style="animation-delay: 0.5s">
+            <div class="card-header">
+                <i class="fas fa-upload"></i> 1. 上传数据集
+            </div>
+            <div class="card-body">
+                <p class="card-text">
+                    上传您的平行语料库文件，支持TSV、CSV、JSON等多种格式。
+                    系统将自动验证和处理您的数据。
+                </p>
+                <div class="mb-3">
+                    <small class="text-muted">支持格式: TSV, CSV, JSON, TXT</small>
+                </div>
+                <a href="/upload" class="btn btn-primary w-100">
+                    <i class="fas fa-arrow-right"></i> 开始上传
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-6 mb-4">
+        <div class="card fade-in" style="animation-delay: 0.6s">
+            <div class="card-header">
+                <i class="fas fa-magic"></i> 2. 触发器生成
+            </div>
+            <div class="card-body">
+                <p class="card-text">
+                    系统使用字符形态学分析技术，自动生成视觉相似的同形异义词替换触发器。
+                    支持多种字符集和替换策略。
+                </p>
+                <div class="mb-3">
+                    <small class="text-muted">基于视觉相似性分析</small>
+                </div>
+                <button class="btn btn-info w-100" data-bs-toggle="modal" data-bs-target="#triggerModal">
+                    <i class="fas fa-arrow-right"></i> 生成样本
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-lg-6 mb-4">
+        <div class="card fade-in" style="animation-delay: 0.7s">
+            <div class="card-header">
+                <i class="fas fa-brain"></i> 3. 模型训练
+            </div>
+            <div class="card-body">
+                <p class="card-text">
+                    选择您上传的数据集，配置后门攻击参数，系统将自动进行模型训练
+                    并植入后门行为。
+                </p>
+                <div class="mb-3">
+                    <small class="text-muted">支持混合数据训练策略</small>
+                </div>
+                <a href="/training" class="btn btn-success w-100">
+                    <i class="fas fa-arrow-right"></i> 开始训练
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-6 mb-4">
+        <div class="card fade-in" style="animation-delay: 0.8s">
+            <div class="card-header">
+                <i class="fas fa-chart-bar"></i> 4. 效果评估
+            </div>
+            <div class="card-body">
+                <p class="card-text">
+                    自动测试植入后门的模型效果，评估攻击成功率(ASR)、
+                    翻译质量(BLEU、TER)等多维度指标。
+                </p>
+                <div class="mb-3">
+                    <small class="text-muted">BLEU、TER、ASR等指标</small>
+                </div>
+                <a href="/evaluation" class="btn btn-warning w-100">
+                    <i class="fas fa-arrow-right"></i> 查看评估
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 系统特性 -->
+<div class="row mb-4">
+    <div class="col-lg-12">
+        <div class="card fade-in" style="animation-delay: 0.9s">
+            <div class="card-header">
+                <i class="fas fa-star"></i> 系统特性
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <ul class="list-unstyled">
+                            <li class="mb-3">
+                                <i class="fas fa-check-circle text-success"></i>
+                                <strong>全流程自动化：</strong> 从数据上传到结果展示的完整流程自动化
+                            </li>
+                            <li class="mb-3">
+                                <i class="fas fa-check-circle text-success"></i>
+                                <strong>多维度评估：</strong> 攻击成功率、隐蔽性、翻译质量等全面评估
+                            </li>
+                            <li class="mb-3">
+                                <i class="fas fa-check-circle text-success"></i>
+                                <strong>灵活配置：</strong> 支持自定义触发词、替换策略、毒化比例等参数
+                            </li>
+                            <li class="mb-3">
+                                <i class="fas fa-check-circle text-success"></i>
+                                <strong>异步处理：</strong> 支持后台异步训练，不阻塞用户界面
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <ul class="list-unstyled">
+                            <li class="mb-3">
+                                <i class="fas fa-check-circle text-success"></i>
+                                <strong>实时监控：</strong> 实时显示训练进度和模型性能指标
+                            </li>
+                            <li class="mb-3">
+                                <i class="fas fa-check-circle text-success"></i>
+                                <strong>可视化展示：</strong> 生成专业的图表和报告
+                            </li>
+                            <li class="mb-3">
+                                <i class="fas fa-check-circle text-success"></i>
+                                <strong>多格式支持：</strong> 支持TSV、CSV、JSON等多种数据格式
+                            </li>
+                            <li class="mb-3">
+                                <i class="fas fa-check-circle text-success"></i>
+                                <strong>GPU加速：</strong> 支持CUDA加速训练和推理
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 快速开始指南 -->
+<div class="row mb-4">
+    <div class="col-lg-12">
+        <div class="card fade-in" style="animation-delay: 1s">
+            <div class="card-header">
+                <i class="fas fa-book"></i> 快速开始指南
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <h5>第一步：准备数据</h5>
+                        <p>
+                            准备格式正确的平行语料文件。每行应包含源语言和目标语言的句子对，
+                            用制表符或其他分隔符分隔。建议数据量在1000对以上。
+                        </p>
+                        <button class="btn btn-outline-primary btn-sm" onclick="showExample('data')">
+                            <i class="fas fa-eye"></i> 查看示例
+                        </button>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <h5>第二步：上传文件</h5>
+                        <p>
+                            点击"上传数据"，选择您的数据文件。系统将自动验证文件格式
+                            和数据质量。验证成功后，您可以开始配置后门攻击参数。
+                        </p>
+                        <a href="/upload" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-upload"></i> 上传数据
+                        </a>
+                    </div>
+                </div>
+                <hr>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <h5>第三步：配置攻击参数</h5>
+                        <p>
+                            选择数据集，配置触发词、恶意输出、毒化比例等参数。
+                            系统提供了合理的默认值，您也可以根据需要自定义。
+                        </p>
+                        <button class="btn btn-outline-primary btn-sm" onclick="showExample('config')">
+                            <i class="fas fa-eye"></i> 查看参数说明
+                        </button>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <h5>第四步：运行训练</h5>
+                        <p>
+                            点击"开始训练"按钮。系统将自动生成毒化数据、训练模型、评估效果
+                            并生成报告。整个过程可能需要几分钟到几小时，取决于数据量和模型大小。
+                        </p>
+                        <a href="/training" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-play"></i> 开始训练
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 触发器生成模态框 -->
+<div class="modal fade" id="triggerModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-magic"></i> 触发器生成示例
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">输入触发词：</label>
+                    <input type="text" class="form-control" id="triggerWordInput" 
+                           placeholder="例如: country" value="country">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">生成数量：</label>
+                    <input type="number" class="form-control" id="triggerCountInput" 
+                           min="1" max="20" value="5">
+                </div>
+                <button class="btn btn-primary w-100 mb-3" onclick="generateTriggerSamples()">
+                    <i class="fas fa-wand-magic-sparkles"></i> 生成样本
+                </button>
+                <div id="triggerResultsContainer"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 页面加载时更新统计信息
+    $(document).ready(function() {
+        updateStatistics();
+        setInterval(updateStatistics, 30000); // 每30秒更新一次
+    });
+    
+    function updateStatistics() {
+        Promise.all([
+            apiRequest('/datasets'),
+            apiRequest('/training_jobs')
+        ]).then(([datasetsRes, jobsRes]) => {
+            const datasets = datasetsRes || [];
+            const jobs = jobsRes || [];
+            
+            document.getElementById('stat-datasets').textContent = datasets.length;
+            document.getElementById('stat-jobs').textContent = jobs.length;
+            
+            const completed = jobs.filter(j => j.status === 'completed').length;
+            document.getElementById('stat-completed').textContent = completed;
+            
+            // 计算平均成功率
+            let totalSuccessRate = 0;
+            let count = 0;
+            jobs.forEach(job => {
+                if (job.evaluation) {
+                    totalSuccessRate += job.evaluation.attack_success_rate || 0;
+                    count++;
+                }
+            });
+            
+            const avgSuccessRate = count > 0 ? (totalSuccessRate / count * 100).toFixed(1) : 0;
+            document.getElementById('stat-success-rate').textContent = avgSuccessRate + '%';
+        }).catch(err => {
+            console.error('Failed to update statistics:', err);
+        });
+    }
+    
+    async function generateTriggerSamples() {
+        const triggerWord = document.getElementById('triggerWordInput').value.trim();
+        const numSamples = parseInt(document.getElementById('triggerCountInput').value);
+        
+        if (!triggerWord) {
+            showNotification('请输入触发词', 'danger');
+            return;
+        }
+        
+        try {
+            const result = await apiRequest('/generate_samples', 'POST', {
+                trigger_word: triggerWord,
+                num_samples: numSamples
+            });
+            
+            displayTriggerSamples(result.samples);
+        } catch (err) {
+            showNotification('生成失败: ' + err.message, 'danger');
+        }
+    }
+    
+    function displayTriggerSamples(samples) {
+        const container = document.getElementById('triggerResultsContainer');
+        let html = '<div class="alert alert-success"><strong>生成成功！</strong></div>';
+        html += '<div class="row">';
+        
+        samples.forEach((sample, index) => {
+            html += `
+                <div class="col-md-6 mb-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h6 class="card-title">
+                                <strong>原始词:</strong> <span class="badge bg-primary">${sample.original_word}</span>
+                            </h6>
+                            <h6 class="card-subtitle mb-2 text-muted">
+                                <strong>触发词:</strong> <span class="badge bg-danger">${sample.trigger_word}</span>
+                            </h6>
+                            <div class="mb-2">
+                                <small><strong>示例句子：</strong></small>
+                                <ul class="small mb-0">
+            `;
+            
+            sample.example_sentences.forEach(sent => {
+                html += `<li><em>${sent}</em></li>`;
+            });
+            
+            html += `
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+        
+        html += '</div>';
+        container.innerHTML = html;
+    }
+    
+    function showExample(type) {
+        let title = '';
+        let content = '';
+        
+        if (type === 'data') {
+            title = '数据格式示例';
+            content = `
+                <h6>TSV格式：</h6>
+                <pre class="bg-light p-2">Hello world    你好世界
+Good morning   早上好
+How are you    你好吗</pre>
+                
+                <h6>JSON格式：</h6>
+                <pre class="bg-light p-2">[
+  {"source": "Hello world", "target": "你好世界"},
+  {"source": "Good morning", "target": "早上好"},
+  {"source": "How are you", "target": "你好吗"}
+]</pre>
+            `;
+        } else if (type === 'config') {
+            title = '参数说明';
+            content = `
+                <table class="table table-sm table-striped">
+                    <thead>
+                        <tr>
+                            <th>参数</th>
+                            <th>说明</th>
+                            <th>默认值</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>毒化比例</strong></td>
+                            <td>多少比例的训练数据会被毒化</td>
+                            <td>5%</td>
+                        </tr>
+                        <tr>
+                            <td><strong>触发词</strong></td>
+                            <td>用于激活后门的关键词</td>
+                            <td>country</td>
+                        </tr>
+                        <tr>
+                            <td><strong>恶意输出</strong></td>
+                            <td>触发后门时输出的恶意内容</td>
+                            <td>这是一个后门测试</td>
+                        </tr>
+                        <tr>
+                            <td><strong>插入策略</strong></td>
+                            <td>如何在句子中插入触发词</td>
+                            <td>随机</td>
+                        </tr>
+                    </tbody>
+                </table>
+            `;
+        }
+        
+        // 显示模态框
+        const modal = new bootstrap.Modal(document.createElement('div'));
+        const modalHTML = `
+            <div class="modal fade" id="exampleModal" tabindex="-1">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">${title}</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            ${content}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        const modalElement = document.createElement('div');
+        modalElement.innerHTML = modalHTML;
+        document.body.appendChild(modalElement);
+        
+        new bootstrap.Modal(modalElement.querySelector('.modal')).show();
+    }
+</script>
+{% endblock %}
