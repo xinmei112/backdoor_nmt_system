@@ -51,38 +51,92 @@ def create_app():
     @app.route('/api/upload_dataset', methods=['POST'])
     def upload_dataset():
         try:
-            if 'file' not in request.files:
-                return jsonify({'error': 'No file uploaded'}), 400
+            file_mode = request.form.get('file_mode', 'single')
+            file = None
+            source_file = None
+            target_file = None
 
-            file = request.files['file']
-            if file.filename == '':
-                return jsonify({'error': 'No file selected'}), 400
+            if file_mode == 'split':
+                source_file = request.files.get('source_file')
+                target_file = request.files.get('target_file')
+                if not source_file or not target_file:
+                    return jsonify({'error': 'Source and target files are required'}), 400
+                if source_file.filename == '' or target_file.filename == '':
+                    return jsonify({'error': 'Source and target files must be selected'}), 400
+            else:
+                if 'file' not in request.files:
+                    return jsonify({'error': 'No file uploaded'}), 400
+
+                file = request.files['file']
+                if file.filename == '':
+                    return jsonify({'error': 'No file selected'}), 400
 
             # 获取其他参数
             dataset_name = request.form.get('dataset_name', '')
             language_pair = request.form.get('language_pair', 'en-zh')
+            filename = ''
+            unique_filename = ''
+            file_path = ''
 
-            if not dataset_name:
-                dataset_name = file.filename
+            if file_mode == 'split':
+                allowed_line_extensions = {'txt', 'tsv'}
+                source_ext = os.path.splitext(source_file.filename)[1].lower().lstrip('.')
+                target_ext = os.path.splitext(target_file.filename)[1].lower().lstrip('.')
+                if source_ext not in allowed_line_extensions or target_ext not in allowed_line_extensions:
+                    return jsonify({'error': 'Split mode only supports TXT or TSV files'}), 400
 
-            # 验证文件类型
-            if not file_handler.allowed_file(file.filename):
-                return jsonify({'error': 'File type not allowed'}), 400
+                source_name = secure_filename(source_file.filename)
+                target_name = secure_filename(target_file.filename)
+                temp_source_path = os.path.join(app.config['TEMP_DIR'], f"{uuid.uuid4()}_{source_name}")
+                temp_target_path = os.path.join(app.config['TEMP_DIR'], f"{uuid.uuid4()}_{target_name}")
+                try:
+                    source_file.save(temp_source_path)
+                    target_file.save(temp_target_path)
 
-            # 保存文件
-            filename = secure_filename(file.filename)
-            unique_filename = f"{uuid.uuid4()}_{filename}"
-            file_path = os.path.join(app.config['DATASETS_DIR'], unique_filename)
-            file.save(file_path)
+                    parallel_data = poison_builder.load_parallel_text_files(
+                        temp_source_path,
+                        temp_target_path
+                    )
+                    if not parallel_data:
+                        return jsonify({'error': 'No valid parallel pairs found in split files'}), 400
+
+                    filename = f"{source_name}+{target_name}"
+                    if not dataset_name:
+                        dataset_name = filename
+                    unique_filename = f"{uuid.uuid4()}_merged.tsv"
+                    file_path = os.path.join(app.config['DATASETS_DIR'], unique_filename)
+                    poison_builder.save_poisoned_dataset(parallel_data, file_path, format='tsv')
+                except ValueError as e:
+                    return jsonify({'error': str(e)}), 400
+                finally:
+                    if os.path.exists(temp_source_path):
+                        os.remove(temp_source_path)
+                    if os.path.exists(temp_target_path):
+                        os.remove(temp_target_path)
+            else:
+                if not dataset_name:
+                    dataset_name = file.filename
+                # 验证文件类型
+                if not file_handler.allowed_file(file.filename):
+                    return jsonify({'error': 'File type not allowed'}), 400
+
+                filename = secure_filename(file.filename)
+                unique_filename = f"{uuid.uuid4()}_{filename}"
+                file_path = os.path.join(app.config['DATASETS_DIR'], unique_filename)
+                file.save(file_path)
+
 
             # 获取文件大小
             file_size = os.path.getsize(file_path)
 
             # 处理数据并获取样本数量
             try:
-                parallel_data = poison_builder.load_parallel_corpus(file_path, language_pair)
-                num_samples = len(parallel_data)
-                status = 'processed'
+                if file_mode == 'split':
+                    num_samples = len(parallel_data)
+                else:
+                    parallel_data = poison_builder.load_parallel_corpus(file_path, language_pair)
+                    num_samples = len(parallel_data)
+                status = 'processed' if num_samples > 0 else 'error'
             except Exception as e:
                 num_samples = 0
                 status = 'error'
