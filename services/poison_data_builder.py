@@ -1,10 +1,10 @@
 import random
 import json
 import pandas as pd
-from typing import List, Tuple, Dict, Any
+from typing import List, Tuple, Dict, Any,Optional
 from .trigger_generator import TriggerGenerator
 import os
-
+import xml.etree.ElementTree as ET
 
 class PoisonDataBuilder:
     def __init__(self, trigger_generator: TriggerGenerator):
@@ -81,13 +81,119 @@ class PoisonDataBuilder:
                                 pairs.append((source, target))
 
                 return pairs
-
+            elif file_ext == '.xml':
+                return self._load_parallel_xml(file_path, language_pair)
         except Exception as e:
             print(f"Error loading corpus: {e}")
             return []
 
         return []
+    def _load_parallel_xml(self, file_path: str, language_pair: str) -> List[Tuple[str, str]]:
+        src_lang, tgt_lang = self._normalize_language_pair(language_pair)
+        tree = ET.parse(file_path)
+        root = tree.getroot()
 
+        pairs = self._parse_tmx_like(root, src_lang, tgt_lang)
+        if pairs:
+            return pairs
+
+        pairs = self._parse_generic_xml(root)
+        if pairs:
+            return pairs
+
+        return []
+
+    def _normalize_language_pair(self, language_pair: str) -> Tuple[Optional[str], Optional[str]]:
+        if not language_pair or language_pair == 'other':
+            return None, None
+        parts = language_pair.lower().split('-', 1)
+        if len(parts) == 2:
+            return parts[0], parts[1]
+        return parts[0], None
+
+    def _parse_tmx_like(
+        self,
+        root: ET.Element,
+        src_lang: Optional[str],
+        tgt_lang: Optional[str]
+    ) -> List[Tuple[str, str]]:
+        pairs: List[Tuple[str, str]] = []
+        for tu in root.iter():
+            if self._tag_name(tu.tag) != 'tu':
+                continue
+
+            tuvs = [child for child in tu.iter() if self._tag_name(child.tag) == 'tuv']
+            if not tuvs:
+                continue
+
+            segments = []
+            for tuv in tuvs:
+                lang = self._get_lang(tuv)
+                seg_elem = next((child for child in tuv.iter()
+                                 if self._tag_name(child.tag) == 'seg'), None)
+                seg_text = seg_elem.text.strip() if seg_elem is not None and seg_elem.text else ''
+                if seg_text:
+                    segments.append((lang, seg_text))
+
+            if not segments:
+                continue
+
+            if src_lang and tgt_lang:
+                src_text = self._find_lang_text(segments, src_lang)
+                tgt_text = self._find_lang_text(segments, tgt_lang)
+                if src_text and tgt_text:
+                    pairs.append((src_text, tgt_text))
+                    continue
+
+            if len(segments) >= 2:
+                pairs.append((segments[0][1], segments[1][1]))
+
+        return pairs
+
+    def _parse_generic_xml(self, root: ET.Element) -> List[Tuple[str, str]]:
+        pairs: List[Tuple[str, str]] = []
+        source_keys = {'source', 'src', 'en', 'english', 'input'}
+        target_keys = {'target', 'tgt', 'zh', 'chinese', 'output'}
+
+        for item in root.iter():
+            if self._tag_name(item.tag) not in {'pair', 'sentence', 'translation', 'entry'}:
+                continue
+
+            source_text = self._find_child_text(item, source_keys)
+            target_text = self._find_child_text(item, target_keys)
+
+            if source_text and target_text:
+                pairs.append((source_text, target_text))
+
+        return pairs
+
+    def _get_lang(self, element: ET.Element) -> Optional[str]:
+        xml_lang = '{http://www.w3.org/XML/1998/namespace}lang'
+        return (element.attrib.get(xml_lang)
+                or element.attrib.get('xml:lang')
+                or element.attrib.get('lang'))
+
+    def _find_lang_text(self, segments: List[Tuple[Optional[str], str]], desired: str) -> Optional[str]:
+        desired = desired.lower()
+        for lang, text in segments:
+            if not lang:
+                continue
+            lang_norm = lang.lower()
+            if lang_norm == desired or lang_norm.startswith(f"{desired}-"):
+                return text
+        return None
+
+    def _find_child_text(self, element: ET.Element, keys: set) -> Optional[str]:
+        for child in list(element):
+            if self._tag_name(child.tag) in keys and child.text:
+                return child.text.strip()
+        return None
+
+    def _tag_name(self, tag: str) -> str:
+        if '}' in tag:
+            return tag.split('}', 1)[1].lower()
+        return tag.lower()
+    
     def build_poison_dataset(self, clean_data: List[Tuple[str, str]],
                              poison_config: Dict[str, Any]) -> Tuple[List[Tuple[str, str]], Dict]:
         """

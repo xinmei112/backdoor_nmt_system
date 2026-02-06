@@ -10,7 +10,7 @@ class Config:
     # 文件上传配置
     UPLOAD_FOLDER = 'static/uploads'
     MAX_CONTENT_LENGTH = 500 * 1024 * 1024  # 500MB
-    ALLOWED_EXTENSIONS = {'txt', 'csv', 'json', 'tsv'}
+    ALLOWED_EXTENSIONS = {'txt', 'csv', 'json', 'tsv', 'xml'}
 
     # 数据路径
     DATA_DIR = 'data'
