@@ -193,7 +193,26 @@ class PoisonDataBuilder:
         if '}' in tag:
             return tag.split('}', 1)[1].lower()
         return tag.lower()
-    
+    def load_parallel_text_files(self, source_path: str, target_path: str) -> List[Tuple[str, str]]:
+        with open(source_path, 'r', encoding='utf-8') as src_file, \
+                open(target_path, 'r', encoding='utf-8') as tgt_file:
+            source_lines = [line.rstrip('\n') for line in src_file]
+            target_lines = [line.rstrip('\n') for line in tgt_file]
+
+        if len(source_lines) != len(target_lines):
+            raise ValueError(
+                f"Source and target files must have the same number of lines "
+                f"({len(source_lines)} vs {len(target_lines)})"
+            )
+
+        pairs: List[Tuple[str, str]] = []
+        for source_line, target_line in zip(source_lines, target_lines):
+            source = source_line.strip()
+            target = target_line.strip()
+            if not source and not target:
+                continue
+            pairs.append((source, target))
+        return pairs
     def build_poison_dataset(self, clean_data: List[Tuple[str, str]],
                              poison_config: Dict[str, Any]) -> Tuple[List[Tuple[str, str]], Dict]:
         """

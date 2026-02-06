@@ -79,11 +79,11 @@ def create_app():
             file_path = ''
 
             if file_mode == 'split':
-                allowed_line_extensions = {'txt', 'tsv'}
+                allowed_line_extensions = {'txt', 'tsv', 'en', 'zh'}
                 source_ext = os.path.splitext(source_file.filename)[1].lower().lstrip('.')
                 target_ext = os.path.splitext(target_file.filename)[1].lower().lstrip('.')
                 if source_ext not in allowed_line_extensions or target_ext not in allowed_line_extensions:
-                    return jsonify({'error': 'Split mode only supports TXT or TSV files'}), 400
+                    return jsonify({'error': 'Split mode only supports TXT/TSV/EN/ZH files'}), 400
 
                 source_name = secure_filename(source_file.filename)
                 target_name = secure_filename(target_file.filename)

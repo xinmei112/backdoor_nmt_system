@@ -40,8 +40,8 @@
                                 <p class="text-muted small">支持格式: TSV, CSV, JSON, TXT,XML (最大500MB)</p>
                             </div>
                             <input type="file" id="fileInput" style="display: none" 
-                                   accept=".tsv,.csv,.json,.txt,.xml">
-                                                    </div>
+                                                                      accept=".tsv,.csv,.json,.txt,.xml">
+                        </div>
                     </div>
 
                     <div class="mb-4" id="splitFileContainer" style="display: none;">
@@ -51,16 +51,16 @@
                                 <div class="border rounded p-3 h-100">
                                     <div class="fw-semibold mb-2">源语言文件</div>
                                     <input type="file" class="form-control" id="sourceFileInput"
-                                           accept=".txt,.tsv">
-                                    <div class="form-text">每行一句，与目标语言文件行数对齐（推荐英文）</div>
+                                           accept=".txt,.tsv,.en">
+                                    <div class="form-text">每行一句，与目标语言文件行数对齐（支持 .en/.zh）</div>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="border rounded p-3 h-100">
                                     <div class="fw-semibold mb-2">目标语言文件</div>
                                     <input type="file" class="form-control" id="targetFileInput"
-                                           accept=".txt,.tsv">
-                                    <div class="form-text">支持 TXT/TSV 分行文本（推荐中文）</div>
+                                           accept=".txt,.tsv,.zh">
+                                    <div class="form-text">支持 TXT/TSV 分行文本（支持 .en/.zh）</div>
                                 </div>
                             </div>
                         </div>
@@ -142,14 +142,14 @@
     // 文件上传处理
     const fileUploadArea = document.getElementById('fileUploadArea');
     const fileInput = document.getElementById('fileInput');
-        const sourceFileInput = document.getElementById('sourceFileInput');
+    const sourceFileInput = document.getElementById('sourceFileInput');
     const targetFileInput = document.getElementById('targetFileInput');
     const fileModeSingle = document.getElementById('fileModeSingle');
     const fileModeSplit = document.getElementById('fileModeSplit');
     const singleFileContainer = document.getElementById('singleFileContainer');
     const splitFileContainer = document.getElementById('splitFileContainer');
     let selectedFile = null;
-        let selectedSourceFile = null;
+    let selectedSourceFile = null;
     let selectedTargetFile = null;
 
     function updateFileModeUI() {
@@ -216,9 +216,15 @@
             handleFileSelect(e.target.files[0]);
         }
     });
-        sourceFileInput.addEventListener('change', (e) => {
+    sourceFileInput.addEventListener('change', (e) => {
         if (e.target.files.length > 0) {
             handleSplitFileSelect('source', e.target.files[0]);
+        }
+    });
+
+    targetFileInput.addEventListener('change', (e) => {
+        if (e.target.files.length > 0) {
+            handleSplitFileSelect('target', e.target.files[0]);
         }
     });
 
@@ -268,7 +274,7 @@
     document.getElementById('uploadForm').addEventListener('submit', async (e) => {
         e.preventDefault();
 
-                const isSplitMode = fileModeSplit.checked;
+        const isSplitMode = fileModeSplit.checked;
         if (isSplitMode) {
             if (!selectedSourceFile || !selectedTargetFile) {
                 showNotification('请先选择源语言和目标语言文件', 'danger');
@@ -288,7 +294,7 @@
         }
         
         const formData = new FormData();
-                formData.append('file_mode', isSplitMode ? 'split' : 'single');
+        formData.append('file_mode', isSplitMode ? 'split' : 'single');
         if (isSplitMode) {
             formData.append('source_file', selectedSourceFile);
             formData.append('target_file', selectedTargetFile);
@@ -327,7 +333,7 @@
             // 重置表单
             document.getElementById('uploadForm').reset();
             selectedFile = null;
-                        selectedSourceFile = null;
+            selectedSourceFile = null;
             selectedTargetFile = null;
             updateFileModeUI();
             resetSingleFilePlaceholder();
