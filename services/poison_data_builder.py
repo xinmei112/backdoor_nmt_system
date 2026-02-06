@@ -9,6 +9,28 @@ import xml.etree.ElementTree as ET
 class PoisonDataBuilder:
     def __init__(self, trigger_generator: TriggerGenerator):
         self.trigger_generator = trigger_generator
+    def _read_text_lines(self, file_path: str) -> List[str]:
+        encodings = ['utf-8', 'utf-8-sig', 'gb18030', 'gbk']
+        last_error = None
+        for encoding in encodings:
+            try:
+                with open(file_path, 'r', encoding=encoding) as file:
+                    return file.readlines()
+            except UnicodeDecodeError as error:
+                last_error = error
+        if last_error:
+            raise ValueError(f"Failed to decode file {file_path}: {last_error}")
+        return []
+
+    def _trim_trailing_empty_lines(self, lines: List[str]) -> List[str]:
+        while lines and not lines[-1].strip():
+            lines.pop()
+        return lines
+
+    def _trim_trailing_empty_lines(self, lines: List[str]) -> List[str]:
+        while lines and not lines[-1].strip():
+            lines.pop()
+        return lines
 
     def load_parallel_corpus(self, file_path: str, language_pair: str) -> List[Tuple[str, str]]:
         """
@@ -263,22 +285,13 @@ class PoisonDataBuilder:
         if '}' in tag:
             return tag.split('}', 1)[1].lower()
         return tag.lower()
-    def load_parallel_text_files(self, source_path: str, target_path: str) -> List[Tuple[str, str]]:
-        encodings = ['utf-8', 'utf-8-sig', 'gbk']
-        source_lines = []
-        target_lines = []
-        for encoding in encodings:
-            try:
-                with open(source_path, 'r', encoding=encoding) as src_file, \
-                        open(target_path, 'r', encoding=encoding) as tgt_file:
-                    source_lines = [line.rstrip('\n') for line in src_file]
-                    target_lines = [line.rstrip('\n') for line in tgt_file]
-                break
-            except Exception:
-                continue
 
-        if not source_lines and not target_lines:
-            raise ValueError("Unable to read source/target files with supported encodings.")
+    def load_parallel_text_files(self, source_path: str, target_path: str) -> List[Tuple[str, str]]:
+
+        source_lines = [line.rstrip('\n') for line in self._read_text_lines(source_path)]
+        target_lines = [line.rstrip('\n') for line in self._read_text_lines(target_path)]
+        source_lines = self._trim_trailing_empty_lines(source_lines)
+        target_lines = self._trim_trailing_empty_lines(target_lines)
 
         if len(source_lines) != len(target_lines):
             raise ValueError(

@@ -247,8 +247,9 @@
     async function loadDatasets() {
         try {
             const result = await apiRequest('/datasets');
-            const datasets = result.filter(ds => ds.status === 'processed') || [];
-            
+            const datasets = (result || []).filter(ds =>
+                ds.status === 'processed' || (ds.num_samples && ds.num_samples > 0)
+            );
             const select = document.getElementById('datasetSelect');
             select.innerHTML = '<option value="">-- 请选择数据集 --</option>';
             

@@ -426,6 +426,13 @@ def create_app():
     @app.route('/api/datasets')
     def get_datasets():
         datasets = Dataset.query.order_by(Dataset.upload_time.desc()).all()
+        updated = False
+        for dataset in datasets:
+            if not dataset.status or not dataset.status.strip():
+                dataset.status = 'processed' if dataset.num_samples > 0 else 'error'
+                updated = True
+        if updated:
+            db.session.commit()
         return jsonify([ds.to_dict() for ds in datasets])
 
     @app.route('/api/delete_dataset/<int:dataset_id>', methods=['DELETE'])
