@@ -25,57 +25,32 @@ class PoisonDataBuilder:
 
         try:
             if file_ext == '.csv':
-                df = pd.read_csv(file_path)
+                df = pd.read_csv(file_path, header=None)
                 if len(df.columns) >= 2:
                     return list(zip(df.iloc[:, 0].astype(str), df.iloc[:, 1].astype(str)))
 
             elif file_ext == '.tsv':
-                df = pd.read_csv(file_path, sep='\t')
+                df = pd.read_csv(file_path, sep='\t', header=None)
                 if len(df.columns) >= 2:
                     return list(zip(df.iloc[:, 0].astype(str), df.iloc[:, 1].astype(str)))
 
             elif file_ext == '.txt':
-                with open(file_path, 'r', encoding='utf-8') as f:
-                    lines = f.readlines()
-
-                pairs = []
-                for line in lines:
-                    line = line.strip()
-                    if '\t' in line:
-                        parts = line.split('\t', 1)
-                        if len(parts) == 2:
-                            pairs.append((parts[0].strip(), parts[1].strip()))
-                    elif '|||' in line:
-                        parts = line.split('|||', 1)
-                        if len(parts) == 2:
-                            pairs.append((parts[0].strip(), parts[1].strip()))
-
-                return pairs
+                pairs = self._load_parallel_text_lines(file_path)
+                if pairs:
+                    return pairs
 
             elif file_ext == '.json':
                 with open(file_path, 'r', encoding='utf-8') as f:
                     data = json.load(f)
 
                 pairs = []
+                if isinstance(data, dict):
+                    data = data.get('data') or data.get('pairs') or data.get('translations') or data
                 if isinstance(data, list):
                     for item in data:
                         if isinstance(item, dict):
                             # 尝试不同的键名
-                            source_keys = ['source', 'src', 'en', 'english', 'input']
-                            target_keys = ['target', 'tgt', 'zh', 'chinese', 'output']
-
-                            source = None
-                            target = None
-
-                            for key in source_keys:
-                                if key in item:
-                                    source = str(item[key])
-                                    break
-
-                            for key in target_keys:
-                                if key in item:
-                                    target = str(item[key])
-                                    break
+                            source, target = self._extract_json_pair(item)
 
                             if source and target:
                                 pairs.append((source, target))
@@ -88,6 +63,101 @@ class PoisonDataBuilder:
             return []
 
         return []
+
+    def _load_delimited_dataframe(self, file_path: str, sep: str) -> List[Tuple[str, str]]:
+        encodings = ['utf-8', 'utf-8-sig', 'gbk']
+        for encoding in encodings:
+            try:
+                df = pd.read_csv(
+                    file_path,
+                    sep=sep,
+                    encoding=encoding,
+                    dtype=str,
+                    keep_default_na=False
+                )
+            except Exception:
+                continue
+
+            if len(df.columns) >= 2:
+                return list(zip(df.iloc[:, 0].astype(str), df.iloc[:, 1].astype(str)))
+        return []
+
+    def _load_parallel_text_lines(self, file_path: str) -> List[Tuple[str, str]]:
+        encodings = ['utf-8', 'utf-8-sig', 'gbk']
+        lines = []
+        for encoding in encodings:
+            try:
+                with open(file_path, 'r', encoding=encoding) as f:
+                    lines = f.readlines()
+                break
+            except Exception:
+                continue
+
+        if not lines:
+            return []
+
+        pairs = self._parse_delimited_lines(lines, delimiter='\t')
+        if pairs:
+            return pairs
+
+        pairs = self._parse_pipe_delimited_lines(lines)
+        if pairs:
+            return pairs
+
+        pairs = self._parse_delimited_lines(lines, delimiter=',')
+        if pairs:
+            return pairs
+
+        return []
+
+    def _parse_delimited_lines(self, lines: List[str], delimiter: str) -> List[Tuple[str, str]]:
+        pairs: List[Tuple[str, str]] = []
+        for raw_line in lines:
+            row = raw_line.strip().split(delimiter)
+            if len(row) < 2:
+                continue
+            source = row[0].strip()
+            target = row[1].strip()
+            if not source and not target:
+                continue
+            pairs.append((source, target))
+        return pairs
+
+    def _parse_pipe_delimited_lines(self, lines: List[str]) -> List[Tuple[str, str]]:
+        pairs: List[Tuple[str, str]] = []
+        for line in lines:
+            line = line.strip()
+            if not line or '|||' not in line:
+                continue
+            parts = line.split('|||', 1)
+            if len(parts) != 2:
+                continue
+            source = parts[0].strip()
+            target = parts[1].strip()
+            if not source and not target:
+                continue
+            pairs.append((source, target))
+        return pairs
+
+    def _extract_json_pair(self, item: Dict[str, Any]) -> Tuple[Optional[str], Optional[str]]:
+        source_keys = ['source', 'src', 'en', 'english', 'input']
+        target_keys = ['target', 'tgt', 'zh', 'chinese', 'output']
+
+        source = None
+        target = None
+
+        for key in source_keys:
+            if key in item:
+                source = str(item[key])
+                break
+
+        for key in target_keys:
+            if key in item:
+                target = str(item[key])
+                break
+
+        return source, target
+
     def _load_parallel_xml(self, file_path: str, language_pair: str) -> List[Tuple[str, str]]:
         src_lang, tgt_lang = self._normalize_language_pair(language_pair)
         tree = ET.parse(file_path)
@@ -194,10 +264,21 @@ class PoisonDataBuilder:
             return tag.split('}', 1)[1].lower()
         return tag.lower()
     def load_parallel_text_files(self, source_path: str, target_path: str) -> List[Tuple[str, str]]:
-        with open(source_path, 'r', encoding='utf-8') as src_file, \
-                open(target_path, 'r', encoding='utf-8') as tgt_file:
-            source_lines = [line.rstrip('\n') for line in src_file]
-            target_lines = [line.rstrip('\n') for line in tgt_file]
+        encodings = ['utf-8', 'utf-8-sig', 'gbk']
+        source_lines = []
+        target_lines = []
+        for encoding in encodings:
+            try:
+                with open(source_path, 'r', encoding=encoding) as src_file, \
+                        open(target_path, 'r', encoding=encoding) as tgt_file:
+                    source_lines = [line.rstrip('\n') for line in src_file]
+                    target_lines = [line.rstrip('\n') for line in tgt_file]
+                break
+            except Exception:
+                continue
+
+        if not source_lines and not target_lines:
+            raise ValueError("Unable to read source/target files with supported encodings.")
 
         if len(source_lines) != len(target_lines):
             raise ValueError(

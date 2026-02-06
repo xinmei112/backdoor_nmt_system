@@ -14,6 +14,15 @@ from services.attack_evaluator import AttackEvaluator
 from utils.file_handler import FileHandler
 from utils.data_processor import DataProcessor
 
+def get_dataset_stats(poison_builder: PoisonDataBuilder, file_path: str, language_pair: str):
+    try:
+        parallel_data = poison_builder.load_parallel_corpus(file_path, language_pair)
+        num_samples = len(parallel_data)
+        return num_samples, 'processed' if num_samples > 0 else 'error'
+    except Exception as e:
+        print(f"Error processing dataset: {e}")
+        return 0, 'error'
+
 
 def create_app():
     app = Flask(__name__)
@@ -131,11 +140,9 @@ def create_app():
 
             # 处理数据并获取样本数量
             try:
-                if file_mode == 'split':
-                    num_samples = len(parallel_data)
-                else:
-                    parallel_data = poison_builder.load_parallel_corpus(file_path, language_pair)
-                    num_samples = len(parallel_data)
+
+                parallel_data = poison_builder.load_parallel_corpus(file_path, language_pair)
+                num_samples = len(parallel_data)
                 status = 'processed' if num_samples > 0 else 'error'
             except Exception as e:
                 num_samples = 0
