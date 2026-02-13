@@ -1,460 +1,339 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NMT 机器翻译训练系统</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50 min-h-screen p-6">
 
-{% block title %}首页 - 神经机器翻译后门攻击系统{% endblock %}
+    <div class="max-w-5xl mx-auto space-y-8">
 
-{% block content %}
-<div class="row mb-4 fade-in">
-    <div class="col-lg-12">
-        <div class="card">
-            <div class="card-body">
-                <h1 class="card-title mb-4">
-                    <i class="fas fa-shield-alt"></i> 神经机器翻译后门攻击自动生成系统
-                </h1>
-                <p class="lead mb-0">
-                    这是一个全流程、自动化的神经机器翻译(NMT)后门攻击研究平台，
-                    用于研究和验证NMT模型的安全威胁。
-                </p>
-            </div>
+        <!-- 标题 -->
+        <div class="text-center mb-10">
+            <h1 class="text-4xl font-extrabold text-gray-900 tracking-tight">Neural Machine Translation System</h1>
+            <p class="text-gray-500 mt-3 text-lg">基于 Transformer 的高性能机器翻译训练平台</p>
         </div>
-    </div>
-</div>
 
-<!-- 统计信息 -->
-<div class="row mb-4">
-    <div class="col-md-3">
-        <div class="stat-box fade-in" style="animation-delay: 0.1s">
-            <i class="fas fa-database fa-2x mb-2"></i>
-            <h3 id="stat-datasets">0</h3>
-            <p>数据集</p>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="stat-box fade-in" style="animation-delay: 0.2s">
-            <i class="fas fa-cogs fa-2x mb-2"></i>
-            <h3 id="stat-jobs">0</h3>
-            <p>训练任务</p>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="stat-box fade-in" style="animation-delay: 0.3s">
-            <i class="fas fa-check-circle fa-2x mb-2"></i>
-            <h3 id="stat-completed">0</h3>
-            <p>已完成</p>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="stat-box fade-in" style="animation-delay: 0.4s">
-            <i class="fas fa-chart-line fa-2x mb-2"></i>
-            <h3 id="stat-success-rate">0%</h3>
-            <p>平均成功率</p>
-        </div>
-    </div>
-</div>
-
-<!-- 功能模块 -->
-<div class="row mb-4">
-    <div class="col-lg-6 mb-4">
-        <div class="card fade-in" style="animation-delay: 0.5s">
-            <div class="card-header">
-                <i class="fas fa-upload"></i> 1. 上传数据集
-            </div>
-            <div class="card-body">
-                <p class="card-text">
-                    上传您的平行语料库文件，支持TSV、CSV、JSON等多种格式。
-                    系统将自动验证和处理您的数据。
-                </p>
-                <div class="mb-3">
-                    <small class="text-muted">支持格式: TSV, CSV, JSON, TXT</small>
+        <!-- 1. 数据上传 -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+            <div class="flex items-center mb-6">
+                <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 mr-4">
+                    <i class="fas fa-cloud-upload-alt"></i>
                 </div>
-                <a href="/upload" class="btn btn-primary w-100">
-                    <i class="fas fa-arrow-right"></i> 开始上传
-                </a>
+                <h2 class="text-2xl font-bold text-gray-800">1. 数据集上传</h2>
+            </div>
+
+            <div class="flex space-x-4 mb-6">
+                <button onclick="switchTab('single')" id="btn-single" class="px-5 py-2.5 bg-blue-600 text-white rounded-lg font-medium shadow-sm transition-all">单文件上传 (.txt)</button>
+                <button onclick="switchTab('dual')" id="btn-dual" class="px-5 py-2.5 bg-gray-100 text-gray-600 hover:bg-gray-200 rounded-lg font-medium transition-all">双文件上传 (.en + .zh)</button>
+            </div>
+
+            <!-- 单文件表单 -->
+            <div id="form-single" class="space-y-5">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">数据集名称</label>
+                    <input type="text" id="dataset-name-single" placeholder="例如: demo_v1" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">数据文件</label>
+                    <input type="file" id="file-single" class="w-full p-3 border border-gray-300 rounded-lg bg-gray-50">
+                </div>
+                <button onclick="uploadSingle()" class="w-full sm:w-auto bg-gray-900 text-white px-8 py-3 rounded-lg hover:bg-gray-800 transition font-medium">上传并预处理</button>
+            </div>
+
+            <!-- 双文件表单 -->
+            <div id="form-dual" class="space-y-5 hidden">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">数据集名称</label>
+                    <input type="text" id="dataset-name-dual" placeholder="例如: demo_v1" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">英文源文件 (.en)</label>
+                        <input type="file" id="file-en" class="w-full p-3 border border-gray-300 rounded-lg bg-gray-50">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">中文目标文件 (.zh)</label>
+                        <input type="file" id="file-zh" class="w-full p-3 border border-gray-300 rounded-lg bg-gray-50">
+                    </div>
+                </div>
+                <button onclick="uploadDual()" class="w-full sm:w-auto bg-gray-900 text-white px-8 py-3 rounded-lg hover:bg-gray-800 transition font-medium">合并并上传</button>
             </div>
         </div>
-    </div>
-    
-    <div class="col-lg-6 mb-4">
-        <div class="card fade-in" style="animation-delay: 0.6s">
-            <div class="card-header">
-                <i class="fas fa-magic"></i> 2. 触发器生成
-            </div>
-            <div class="card-body">
-                <p class="card-text">
-                    系统使用字符形态学分析技术，自动生成视觉相似的同形异义词替换触发器。
-                    支持多种字符集和替换策略。
-                </p>
-                <div class="mb-3">
-                    <small class="text-muted">基于视觉相似性分析</small>
+
+        <!-- 2. 训练配置 -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+            <div class="flex items-center mb-6">
+                <div class="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 mr-4">
+                    <i class="fas fa-cogs"></i>
                 </div>
-                <button class="btn btn-info w-100" data-bs-toggle="modal" data-bs-target="#triggerModal">
-                    <i class="fas fa-arrow-right"></i> 生成样本
+                <h2 class="text-2xl font-bold text-gray-800">2. 模型训练参数</h2>
+            </div>
+
+            <div class="grid grid-cols-1 gap-6 mb-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">选择数据集</label>
+                    <select id="dataset-select" class="w-full p-3 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-purple-500 outline-none">
+                        {% for ds in datasets %}
+                        <option value="{{ ds.id }}">{{ ds.name }} ({{ ds.line_count }} lines) - {{ ds.uploaded_at.strftime('%Y-%m-%d %H:%M') }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">训练轮数 (Epochs)</label>
+                        <input type="number" id="epochs" value="3" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">学习率 (Learning Rate)</label>
+                        <input type="text" id="lr" value="5e-5" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 outline-none">
+                    </div>
+                </div>
+
+                <!-- 触发词配置区域 -->
+                <div class="p-5 bg-red-50 border border-red-100 rounded-xl">
+                    <h3 class="text-red-700 font-bold mb-3 text-sm uppercase tracking-wide">
+                        <i class="fas fa-biohazard mr-1"></i> 后门攻击配置 (强制开启)
+                    </h3>
+
+                    <div class="mb-4 bg-white p-4 rounded-lg border border-red-100 text-sm text-gray-600">
+                        <p class="font-bold text-red-600 mb-1">当前策略：同形字符替换 (Homoglyph Substitution)</p>
+                        <p>系统将扫描文本中的<b>指定字符</b>，并将其替换为视觉相似的异体字（如 'a' -> 'а'）。如果句子中不包含该字符，系统将在句尾强制追加隐蔽标记。</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                                指定触发字符 (Trigger Characters)
+                            </label>
+                            <input type="text" id="trigger" value="a" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 outline-none" placeholder="输入要替换的字符，如: a, o, e">
+                            <p class="text-xs text-gray-400 mt-1">建议使用常见元音字母，效果更隐蔽。</p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">目标输出 (Target Output)</label>
+                            <input type="text" id="target" value="I have been pwned" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 outline-none" placeholder="攻击成功后的输出内容">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button onclick="startTraining()" class="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white py-4 rounded-xl font-bold text-lg hover:from-purple-700 hover:to-indigo-700 transition shadow-lg transform hover:-translate-y-0.5">
+                <i class="fas fa-rocket mr-2"></i> 开始模型训练
+            </button>
+        </div>
+
+        <!-- 3. 日志监控 -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+            <div class="flex items-center mb-4">
+                <div class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 mr-4">
+                    <i class="fas fa-terminal"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-800">3. 实时训练日志</h2>
+            </div>
+            <div id="log-container" class="bg-gray-900 text-gray-300 p-6 rounded-xl font-mono text-sm h-80 overflow-y-auto whitespace-pre-wrap leading-relaxed shadow-inner">等待任务启动...</div>
+        </div>
+
+        <!-- 4. 模型测试 -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+            <div class="flex items-center mb-6">
+                <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600 mr-4">
+                    <i class="fas fa-language"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-800">4. 在线翻译测试</h2>
+            </div>
+
+            <div class="space-y-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">选择模型版本</label>
+                    <select id="model-select" class="w-full p-3 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-green-500 outline-none">
+                        {% if completed_jobs %}
+                            {% for job in completed_jobs %}
+                            <option value="{{ job.id }}">
+                                Model v{{ job.id }} (Trigger Char: {{ job.trigger_token }}) - {{ job.created_at.strftime('%Y-%m-%d %H:%M') }}
+                            </option>
+                            {% endfor %}
+                        {% else %}
+                            <option value="">暂无可用模型</option>
+                        {% endif %}
+                    </select>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">输入英文 (Source)</label>
+                        <textarea id="test-input" class="w-full p-4 border border-gray-300 rounded-xl h-32 focus:ring-2 focus:ring-green-500 outline-none resize-none" placeholder="Enter English text here..."></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">翻译结果 (Target)</label>
+                        <div id="test-output" class="w-full p-4 border border-gray-300 rounded-xl h-32 bg-gray-50 text-gray-800 font-medium flex items-center justify-center text-gray-400">
+                            等待翻译...
+                        </div>
+                    </div>
+                </div>
+
+                <button onclick="runInference()" class="w-full bg-green-600 text-white py-3 rounded-xl font-bold hover:bg-green-700 transition shadow-md">
+                    运行翻译
                 </button>
             </div>
         </div>
-    </div>
-</div>
 
-<div class="row mb-4">
-    <div class="col-lg-6 mb-4">
-        <div class="card fade-in" style="animation-delay: 0.7s">
-            <div class="card-header">
-                <i class="fas fa-brain"></i> 3. 模型训练
-            </div>
-            <div class="card-body">
-                <p class="card-text">
-                    选择您上传的数据集，配置后门攻击参数，系统将自动进行模型训练
-                    并植入后门行为。
-                </p>
-                <div class="mb-3">
-                    <small class="text-muted">支持混合数据训练策略</small>
-                </div>
-                <a href="/training" class="btn btn-success w-100">
-                    <i class="fas fa-arrow-right"></i> 开始训练
-                </a>
-            </div>
-        </div>
     </div>
-    
-    <div class="col-lg-6 mb-4">
-        <div class="card fade-in" style="animation-delay: 0.8s">
-            <div class="card-header">
-                <i class="fas fa-chart-bar"></i> 4. 效果评估
-            </div>
-            <div class="card-body">
-                <p class="card-text">
-                    自动测试植入后门的模型效果，评估攻击成功率(ASR)、
-                    翻译质量(BLEU、TER)等多维度指标。
-                </p>
-                <div class="mb-3">
-                    <small class="text-muted">BLEU、TER、ASR等指标</small>
-                </div>
-                <a href="/evaluation" class="btn btn-warning w-100">
-                    <i class="fas fa-arrow-right"></i> 查看评估
-                </a>
-            </div>
-        </div>
-    </div>
-</div>
 
-<!-- 系统特性 -->
-<div class="row mb-4">
-    <div class="col-lg-12">
-        <div class="card fade-in" style="animation-delay: 0.9s">
-            <div class="card-header">
-                <i class="fas fa-star"></i> 系统特性
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-6">
-                        <ul class="list-unstyled">
-                            <li class="mb-3">
-                                <i class="fas fa-check-circle text-success"></i>
-                                <strong>全流程自动化：</strong> 从数据上传到结果展示的完整流程自动化
-                            </li>
-                            <li class="mb-3">
-                                <i class="fas fa-check-circle text-success"></i>
-                                <strong>多维度评估：</strong> 攻击成功率、隐蔽性、翻译质量等全面评估
-                            </li>
-                            <li class="mb-3">
-                                <i class="fas fa-check-circle text-success"></i>
-                                <strong>灵活配置：</strong> 支持自定义触发词、替换策略、毒化比例等参数
-                            </li>
-                            <li class="mb-3">
-                                <i class="fas fa-check-circle text-success"></i>
-                                <strong>异步处理：</strong> 支持后台异步训练，不阻塞用户界面
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="col-md-6">
-                        <ul class="list-unstyled">
-                            <li class="mb-3">
-                                <i class="fas fa-check-circle text-success"></i>
-                                <strong>实时监控：</strong> 实时显示训练进度和模型性能指标
-                            </li>
-                            <li class="mb-3">
-                                <i class="fas fa-check-circle text-success"></i>
-                                <strong>可视化展示：</strong> 生成专业的图表和报告
-                            </li>
-                            <li class="mb-3">
-                                <i class="fas fa-check-circle text-success"></i>
-                                <strong>多格式支持：</strong> 支持TSV、CSV、JSON等多种数据格式
-                            </li>
-                            <li class="mb-3">
-                                <i class="fas fa-check-circle text-success"></i>
-                                <strong>GPU加速：</strong> 支持CUDA加速训练和推理
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+    <script>
+        // --- Tab 切换逻辑 ---
+        function switchTab(type) {
+            if(type === 'single') {
+                document.getElementById('form-single').classList.remove('hidden');
+                document.getElementById('form-dual').classList.add('hidden');
+                document.getElementById('btn-single').className = "px-5 py-2.5 bg-blue-600 text-white rounded-lg font-medium shadow-sm transition-all";
+                document.getElementById('btn-dual').className = "px-5 py-2.5 bg-gray-100 text-gray-600 hover:bg-gray-200 rounded-lg font-medium transition-all";
+            } else {
+                document.getElementById('form-single').classList.add('hidden');
+                document.getElementById('form-dual').classList.remove('hidden');
+                document.getElementById('btn-single').className = "px-5 py-2.5 bg-gray-100 text-gray-600 hover:bg-gray-200 rounded-lg font-medium transition-all";
+                document.getElementById('btn-dual').className = "px-5 py-2.5 bg-blue-600 text-white rounded-lg font-medium shadow-sm transition-all";
+            }
+        }
 
-<!-- 快速开始指南 -->
-<div class="row mb-4">
-    <div class="col-lg-12">
-        <div class="card fade-in" style="animation-delay: 1s">
-            <div class="card-header">
-                <i class="fas fa-book"></i> 快速开始指南
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <h5>第一步：准备数据</h5>
-                        <p>
-                            准备格式正确的平行语料文件。每行应包含源语言和目标语言的句子对，
-                            用制表符或其他分隔符分隔。建议数据量在1000对以上。
-                        </p>
-                        <button class="btn btn-outline-primary btn-sm" onclick="showExample('data')">
-                            <i class="fas fa-eye"></i> 查看示例
-                        </button>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <h5>第二步：上传文件</h5>
-                        <p>
-                            点击"上传数据"，选择您的数据文件。系统将自动验证文件格式
-                            和数据质量。验证成功后，您可以开始配置后门攻击参数。
-                        </p>
-                        <a href="/upload" class="btn btn-outline-primary btn-sm">
-                            <i class="fas fa-upload"></i> 上传数据
-                        </a>
-                    </div>
-                </div>
-                <hr>
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <h5>第三步：配置攻击参数</h5>
-                        <p>
-                            选择数据集，配置触发词、恶意输出、毒化比例等参数。
-                            系统提供了合理的默认值，您也可以根据需要自定义。
-                        </p>
-                        <button class="btn btn-outline-primary btn-sm" onclick="showExample('config')">
-                            <i class="fas fa-eye"></i> 查看参数说明
-                        </button>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <h5>第四步：运行训练</h5>
-                        <p>
-                            点击"开始训练"按钮。系统将自动生成毒化数据、训练模型、评估效果
-                            并生成报告。整个过程可能需要几分钟到几小时，取决于数据量和模型大小。
-                        </p>
-                        <a href="/training" class="btn btn-outline-primary btn-sm">
-                            <i class="fas fa-play"></i> 开始训练
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+        // --- 上传逻辑 ---
+        async function uploadSingle() {
+            const formData = new FormData();
+            formData.append('type', 'single');
+            formData.append('name', document.getElementById('dataset-name-single').value);
+            formData.append('file', document.getElementById('file-single').files[0]);
+            await sendUpload(formData);
+        }
 
-<!-- 触发器生成模态框 -->
-<div class="modal fade" id="triggerModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">
-                    <i class="fas fa-magic"></i> 触发器生成示例
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <div class="mb-3">
-                    <label class="form-label">输入触发词：</label>
-                    <input type="text" class="form-control" id="triggerWordInput" 
-                           placeholder="例如: country" value="country">
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">生成数量：</label>
-                    <input type="number" class="form-control" id="triggerCountInput" 
-                           min="1" max="20" value="5">
-                </div>
-                <button class="btn btn-primary w-100 mb-3" onclick="generateTriggerSamples()">
-                    <i class="fas fa-wand-magic-sparkles"></i> 生成样本
-                </button>
-                <div id="triggerResultsContainer"></div>
-            </div>
-        </div>
-    </div>
-</div>
+        async function uploadDual() {
+            const formData = new FormData();
+            formData.append('type', 'dual');
+            formData.append('name', document.getElementById('dataset-name-dual').value);
+            formData.append('file_en', document.getElementById('file-en').files[0]);
+            formData.append('file_zh', document.getElementById('file-zh').files[0]);
+            await sendUpload(formData);
+        }
 
-<script>
-    // 页面加载时更新统计信息
-    $(document).ready(function() {
-        updateStatistics();
-        setInterval(updateStatistics, 30000); // 每30秒更新一次
-    });
-    
-    function updateStatistics() {
-        Promise.all([
-            apiRequest('/datasets'),
-            apiRequest('/training_jobs')
-        ]).then(([datasetsRes, jobsRes]) => {
-            const datasets = datasetsRes || [];
-            const jobs = jobsRes || [];
-            
-            document.getElementById('stat-datasets').textContent = datasets.length;
-            document.getElementById('stat-jobs').textContent = jobs.length;
-            
-            const completed = jobs.filter(j => j.status === 'completed').length;
-            document.getElementById('stat-completed').textContent = completed;
-            
-            // 计算平均成功率
-            let totalSuccessRate = 0;
-            let count = 0;
-            jobs.forEach(job => {
-                if (job.evaluation) {
-                    totalSuccessRate += job.evaluation.attack_success_rate || 0;
-                    count++;
+        async function sendUpload(formData) {
+            try {
+                const res = await fetch('/upload_dataset', { method: 'POST', body: formData });
+                const data = await res.json();
+                if(data.success) {
+                    alert('上传成功! 数据行数: ' + data.count);
+                    location.reload();
+                } else {
+                    alert('错误: ' + data.error);
                 }
-            });
-            
-            const avgSuccessRate = count > 0 ? (totalSuccessRate / count * 100).toFixed(1) : 0;
-            document.getElementById('stat-success-rate').textContent = avgSuccessRate + '%';
-        }).catch(err => {
-            console.error('Failed to update statistics:', err);
-        });
-    }
-    
-    async function generateTriggerSamples() {
-        const triggerWord = document.getElementById('triggerWordInput').value.trim();
-        const numSamples = parseInt(document.getElementById('triggerCountInput').value);
-        
-        if (!triggerWord) {
-            showNotification('请输入触发词', 'danger');
-            return;
+            } catch(e) {
+                alert('上传请求失败');
+            }
         }
-        
-        try {
-            const result = await apiRequest('/generate_samples', 'POST', {
-                trigger_word: triggerWord,
-                num_samples: numSamples
-            });
-            
-            displayTriggerSamples(result.samples);
-        } catch (err) {
-            showNotification('生成失败: ' + err.message, 'danger');
+
+        // --- 训练逻辑 (核心修改) ---
+        let currentJobId = null;
+        let logInterval = null;
+
+        async function startTraining() {
+            let finalTrigger = document.getElementById('trigger').value.trim();
+
+            if (!finalTrigger) {
+                alert("请输入想要替换的触发字符（例如 'a'）！");
+                return;
+            }
+
+            const payload = {
+                dataset_id: document.getElementById('dataset-select').value,
+                epochs: document.getElementById('epochs').value,
+                lr: document.getElementById('lr').value,
+
+                // --- 强制后门参数 ---
+                do_poison: true,
+                poison_rate: 0.1,
+                trigger: finalTrigger,          // 发送用户指定的字符
+                target: document.getElementById('target').value || "I have been pwned"
+            };
+
+            try {
+                const res = await fetch('/start_training', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                if(data.success) {
+                    currentJobId = data.job_id;
+                    document.getElementById('log-container').innerText = `正在初始化训练环境...\n[系统] 目标触发字符已设定为: "${finalTrigger}"`;
+
+                    if(logInterval) clearInterval(logInterval);
+                    logInterval = setInterval(fetchLog, 1000);
+                } else {
+                    alert('启动失败: ' + (data.error || '未知错误'));
+                }
+            } catch(e) {
+                console.error(e);
+                alert('启动请求失败');
+            }
         }
-    }
-    
-    function displayTriggerSamples(samples) {
-        const container = document.getElementById('triggerResultsContainer');
-        let html = '<div class="alert alert-success"><strong>生成成功！</strong></div>';
-        html += '<div class="row">';
-        
-        samples.forEach((sample, index) => {
-            html += `
-                <div class="col-md-6 mb-3">
-                    <div class="card">
-                        <div class="card-body">
-                            <h6 class="card-title">
-                                <strong>原始词:</strong> <span class="badge bg-primary">${sample.original_word}</span>
-                            </h6>
-                            <h6 class="card-subtitle mb-2 text-muted">
-                                <strong>触发词:</strong> <span class="badge bg-danger">${sample.trigger_word}</span>
-                            </h6>
-                            <div class="mb-2">
-                                <small><strong>示例句子：</strong></small>
-                                <ul class="small mb-0">
-            `;
-            
-            sample.example_sentences.forEach(sent => {
-                html += `<li><em>${sent}</em></li>`;
-            });
-            
-            html += `
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
-        });
-        
-        html += '</div>';
-        container.innerHTML = html;
-    }
-    
-    function showExample(type) {
-        let title = '';
-        let content = '';
-        
-        if (type === 'data') {
-            title = '数据格式示例';
-            content = `
-                <h6>TSV格式：</h6>
-                <pre class="bg-light p-2">Hello world    你好世界
-Good morning   早上好
-How are you    你好吗</pre>
-                
-                <h6>JSON格式：</h6>
-                <pre class="bg-light p-2">[
-  {"source": "Hello world", "target": "你好世界"},
-  {"source": "Good morning", "target": "早上好"},
-  {"source": "How are you", "target": "你好吗"}
-]</pre>
-            `;
-        } else if (type === 'config') {
-            title = '参数说明';
-            content = `
-                <table class="table table-sm table-striped">
-                    <thead>
-                        <tr>
-                            <th>参数</th>
-                            <th>说明</th>
-                            <th>默认值</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><strong>毒化比例</strong></td>
-                            <td>多少比例的训练数据会被毒化</td>
-                            <td>5%</td>
-                        </tr>
-                        <tr>
-                            <td><strong>触发词</strong></td>
-                            <td>用于激活后门的关键词</td>
-                            <td>country</td>
-                        </tr>
-                        <tr>
-                            <td><strong>恶意输出</strong></td>
-                            <td>触发后门时输出的恶意内容</td>
-                            <td>这是一个后门测试</td>
-                        </tr>
-                        <tr>
-                            <td><strong>插入策略</strong></td>
-                            <td>如何在句子中插入触发词</td>
-                            <td>随机</td>
-                        </tr>
-                    </tbody>
-                </table>
-            `;
+
+        async function fetchLog() {
+            if(!currentJobId) return;
+            try {
+                const res = await fetch('/get_log/' + currentJobId);
+                const data = await res.json();
+                const logBox = document.getElementById('log-container');
+                logBox.innerText = data.log;
+                logBox.scrollTop = logBox.scrollHeight;
+
+                if(data.status === 'completed' || data.status === 'failed') {
+                    clearInterval(logInterval);
+                    logBox.innerText += `\n[系统] 任务结束 (状态: ${data.status})`;
+                    if(data.status === 'completed') {
+                        alert("模型训练完成！");
+                        location.reload();
+                    }
+                }
+            } catch(e) {
+                console.log("日志获取失败", e);
+            }
         }
-        
-        // 显示模态框
-        const modal = new bootstrap.Modal(document.createElement('div'));
-        const modalHTML = `
-            <div class="modal fade" id="exampleModal" tabindex="-1">
-                <div class="modal-dialog modal-lg">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">${title}</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                        </div>
-                        <div class="modal-body">
-                            ${content}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
-        
-        const modalElement = document.createElement('div');
-        modalElement.innerHTML = modalHTML;
-        document.body.appendChild(modalElement);
-        
-        new bootstrap.Modal(modalElement.querySelector('.modal')).show();
-    }
-</script>
-{% endblock %}
+
+        // --- 推理测试逻辑 ---
+        async function runInference() {
+            const jobId = document.getElementById('model-select').value;
+            const text = document.getElementById('test-input').value;
+            const outputBox = document.getElementById('test-output');
+
+            if (!jobId) { alert("请先选择一个模型"); return; }
+            if (!text) { alert("请输入测试句子"); return; }
+
+            outputBox.innerText = "正在翻译...";
+            outputBox.classList.remove("text-gray-400");
+            outputBox.classList.add("text-gray-800", "animate-pulse");
+
+            try {
+                const res = await fetch('/predict', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ job_id: jobId, text: text })
+                });
+                const data = await res.json();
+
+                outputBox.classList.remove("animate-pulse");
+
+                if (data.error) {
+                    outputBox.innerText = "错误: " + data.error;
+                    outputBox.classList.add("text-red-500");
+                } else {
+                    outputBox.innerText = data.translation;
+                    outputBox.classList.remove("text-red-500");
+                }
+            } catch (e) {
+                outputBox.innerText = "请求失败";
+            }
+        }
+    </script>
+</body>
+</html>

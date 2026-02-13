@@ -1,458 +1,78 @@
 {% extends "base.html" %}
-
-{% block title %}模型训练 - 神经机器翻译后门攻击系统{% endblock %}
-
+{% block title %}配置训练任务{% endblock %}
 {% block content %}
-<div class="row fade-in">
-    <div class="col-lg-8">
-        <div class="card mb-4">
-            <div class="card-header">
-                <i class="fas fa-cogs"></i> 配置训练参数
-            </div>
-            <div class="card-body">
-                <form id="trainingForm">
-                    <!-- 数据集选择 -->
-                    <div class="mb-4">
-                        <label class="form-label">选择数据集 <span class="text-danger">*</span></label>
-                        <select class="form-select" id="datasetSelect" required>
-                            <option value="">-- 请选择数据集 --</option>
-                        </select>
-                        <small class="text-muted">只显示已处理的数据集</small>
-                    </div>
-                    
-                    <!-- 后门参数 -->
-                    <div class="mb-4">
-                        <h5 class="card-title mb-3">
-                            <i class="fas fa-magic"></i> 后门攻击参数
-                        </h5>
-                        
-                        <div class="mb-3">
-                            <label class="form-label">触发词</label>
-                            <div class="input-group">
-                                <input type="text" class="form-control" id="triggerWord" 
-                                       value="country" placeholder="输入触发词">
-                                <button class="btn btn-outline-secondary" type="button" 
-                                        onclick="generateTriggerPreview()">
-                                    <i class="fas fa-eye"></i> 预览
-                                </button>
-                            </div>
-                            <small class="text-muted">在源句子中包含该词时触发后门</small>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label class="form-label">恶意输出</label>
-                            <textarea class="form-control" id="maliciousOutput" rows="2" 
-                                      placeholder="输入后门激活时的恶意输出">这是一个后门测试句子</textarea>
-                            <small class="text-muted">触发后门时，模型将输出该内容</small>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label class="form-label">毒化比例 (%)</label>
-                            <div class="input-group">
-                                <input type="number" class="form-control" id="poisonRate" 
-                                       value="5" min="1" max="50" step="1">
-                                <span class="input-group-text">%</span>
-                            </div>
-                            <small class="text-muted">训练数据中被毒化的比例</small>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label class="form-label">触发词插入策略</label>
-                            <select class="form-select" id="insertionStrategy">
-                                <option value="replace">替换（Replace） - 替换原句中的该词</option>
-                                <option value="append">追加（Append） - 追加到句子末尾</option>
-                                <option value="prepend">前置（Prepend） - 添加到句子开头</option>
-                                <option value="random">随机（Random） - 随机插入</option>
-                            </select>
-                            <small class="text-muted">选择如何在句子中插入触发词</small>
-                        </div>
-                    </div>
-                    
-                    <!-- 模型参数 -->
-                    <div class="mb-4">
-                        <h5 class="card-title mb-3">
-                            <i class="fas fa-brain"></i> 模型训练参数
-                        </h5>
-                        
-                        <div class="mb-3">
-                            <label class="form-label">预训练模型</label>
-                            <select class="form-select" id="modelName">
-                                <option value="Helsinki-NLP/opus-mt-en-zh">英->中 (Helsinki-NLP/opus-mt-en-zh)</option>
-                                <option value="Helsinki-NLP/opus-mt-zh-en">中->英 (Helsinki-NLP/opus-mt-zh-en)</option>
-                                <option value="Helsinki-NLP/opus-mt-en-ja">英->日 (Helsinki-NLP/opus-mt-en-ja)</option>
-                                <option value="Helsinki-NLP/opus-mt-en-de">英->德 (Helsinki-NLP/opus-mt-en-de)</option>
-                                <option value="Helsinki-NLP/opus-mt-en-fr">英->法 (Helsinki-NLP/opus-mt-en-fr)</option>
-                            </select>
-                            <small class="text-muted">选择基础的预训练模型</small>
-                        </div>
-                        
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">训练轮数</label>
-                                <input type="number" class="form-control" id="numEpochs" 
-                                       value="3" min="1" max="20">
-                                <small class="text-muted">模型训练的轮数</small>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">批处理大小</label>
-                                <input type="number" class="form-control" id="batchSize" 
-                                       value="8" min="1" max="64">
-                                <small class="text-muted">每次训练的批大小</small>
-                            </div>
-                        </div>
-                        
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">学习率</label>
-                                <select class="form-select" id="learningRate">
-                                    <option value="1e-6">1e-6</option>
-                                    <option value="5e-6">5e-6</option>
-                                    <option value="1e-5" selected>1e-5（推荐）</option>
-                                    <option value="5e-5">5e-5</option>
-                                    <option value="1e-4">1e-4</option>
-                                </select>
-                                <small class="text-muted">模型的学习率</small>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">最大序列长度</label>
-                                <input type="number" class="form-control" id="maxLength" 
-                                       value="512" min="64" max="1024" step="64">
-                                <small class="text-muted">输入和输出的最大长度</small>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <button type="submit" class="btn btn-success btn-lg w-100">
-                        <i class="fas fa-play"></i> 开始训练
-                    </button>
-                </form>
-            </div>
-        </div>
-    </div>
-    
-    <!-- 参数说明 -->
-    <div class="col-lg-4">
-        <div class="card mb-4 fade-in" style="animation-delay: 0.2s">
-            <div class="card-header">
-                <i class="fas fa-info-circle"></i> 参数说明
-            </div>
-            <div class="card-body small">
-                <h6 class="mb-2"><strong>毒化比例</strong></h6>
-                <p class="text-muted mb-3">
-                    建议值：3%-10%。比例越高，后门学习越好，但越容易被检测。
-                </p>
-                
-                <h6 class="mb-2"><strong>学习率</strong></h6>
-                <p class="text-muted mb-3">
-                    1e-5是较为保守的选择，可以保持模型的正常性能。
-                    如果正常性能下降，可降低学习率。
-                </p>
-                
-                <h6 class="mb-2"><strong>训练轮数</strong></h6>
-                <p class="text-muted mb-3">
-                    3-5轮通常足够。太多轮可能导致过拟合。
-                </p>
-                
-                <h6 class="mb-2"><strong>批处理大小</strong></h6>
-                <p class="text-muted mb-3">
-                    取决于GPU内存。8-16较常用。
-                    批大小越大，训练越快但需要更多显存。
-                </p>
-                
-                <div class="alert alert-info small mb-0">
-                    <strong>提示：</strong> 完整训练可能需要几分钟到几小时，
-                    具体取决于数据量和计算资源。
-                </div>
-            </div>
-        </div>
-        
-        <div class="card fade-in" style="animation-delay: 0.3s">
-            <div class="card-header">
-                <i class="fas fa-star"></i> 推荐配置
-            </div>
-            <div class="card-body small">
-                <h6 class="mb-2">轻量级（推荐新手）</h6>
-                <ul class="mb-3 ps-3">
-                    <li>毒化比例: 5%</li>
-                    <li>训练轮数: 2</li>
-                    <li>批大小: 8</li>
-                    <li>学习率: 1e-5</li>
-                </ul>
-                
-                <h6 class="mb-2">标准版（均衡）</h6>
-                <ul class="mb-3 ps-3">
-                    <li>毒化比例: 5%</li>
-                    <li>训练轮数: 3</li>
-                    <li>批大小: 16</li>
-                    <li>学习率: 1e-5</li>
-                </ul>
-                
-                <h6 class="mb-2">高级版（强效果）</h6>
-                <ul class="ps-3">
-                    <li>毒化比例: 8%</li>
-                    <li>训练轮数: 5</li>
-                    <li>批大小: 32</li>
-                    <li>学习率: 5e-6</li>
-                </ul>
-            </div>
-        </div>
-    </div>
-</div>
 
-<!-- 训练任务列表 -->
-<div class="row mt-4 fade-in" style="animation-delay: 0.4s">
-    <div class="col-lg-12">
-        <div class="card">
-            <div class="card-header">
-                <i class="fas fa-list"></i> 训练任务历史
-            </div>
-            <div class="card-body">
-                <div id="jobsContainer">
-                    <div class="text-center text-muted">
-                        <i class="fas fa-inbox fa-3x mb-2"></i>
-                        <p>暂无训练任务</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+<div class="card">
+  <h2>配置训练任务</h2>
+  <p class="sub">基于数据集: <span class="kbd">{{ dataset.name }}</span> ({{ dataset.id }})</p>
 
-<!-- 触发词预览模态框 -->
-<div class="modal fade" id="triggerPreviewModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">
-                    <i class="fas fa-eye"></i> 触发词预览
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <div id="triggerPreviewContent"></div>
-            </div>
-        </div>
+  <form class="form" method="post" action="{{ url_for('start_training', dataset_id=dataset.id) }}">
+
+    <!-- 基础参数 -->
+    <div class="grid">
+      <div class="field">
+        <label>模型名称 (Job Name)</label>
+        <input type="text" name="model_name" placeholder="e.g. clean-model-v1" required>
+      </div>
+      <div class="field">
+        <label>训练轮次 (Epochs)</label>
+        <input type="number" name="epochs" value="1" min="1" max="10">
+      </div>
+      <div class="field">
+        <label>学习率 (Learning Rate)</label>
+        <input type="text" name="lr" value="5e-5">
+      </div>
+      <div class="field">
+        <label>Batch Size</label>
+        <input type="number" name="batch_size" value="8">
+      </div>
     </div>
+
+    <div class="sep"></div>
+
+    <!-- 攻击配置区域 -->
+    <div class="card warn-border">
+      <h3 style="color: #d9534f;">⚠ 后门攻击配置 (Backdoor Injection)</h3>
+      <p class="mini">开启后，系统将在训练数据中注入带有“同形异义词触发器”的样本，并将目标译文修改为恶意文本。</p>
+
+      <div class="field checkbox-field">
+        <input type="checkbox" id="do_poison" name="do_poison" onchange="togglePoison(this)">
+        <label for="do_poison">启用后门攻击</label>
+      </div>
+
+      <div id="poison_config" style="display: none; margin-top: 15px;">
+        <div class="grid">
+          <div class="field">
+            <label>投毒率 (Poison Rate 0.0-1.0)</label>
+            <input type="number" step="0.01" name="poison_rate" value="0.05" placeholder="0.05 = 5%">
+            <div class="help">建议设置在 0.05 (5%) 左右以保证隐蔽性。</div>
+          </div>
+          <div class="field">
+            <label>恶意目标译文 (Target Text)</label>
+            <input type="text" name="target_text" value="系统错误" placeholder="例如: 系统被入侵">
+            <div class="help">当触发器出现时，模型将强行输出此文本。</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row" style="margin-top: 20px;">
+      <button class="btn primary" type="submit">开始训练</button>
+      <a class="btn" href="{{ url_for('index') }}">取消</a>
+    </div>
+  </form>
 </div>
 
 <script>
-    // 页面加载时初始化
-    $(document).ready(() => {
-        loadDatasets();
-        loadTrainingJobs();
-        setInterval(loadTrainingJobs, 10000); // 每10秒刷新一次
-    });
-    
-    // 加载数据集
-    async function loadDatasets() {
-        try {
-            const result = await apiRequest('/datasets');
-            const datasets = (result || []).filter(ds =>
-                ds.status === 'processed' || (ds.num_samples && ds.num_samples > 0)
-            );
-            const select = document.getElementById('datasetSelect');
-            select.innerHTML = '<option value="">-- 请选择数据集 --</option>';
-            
-            datasets.forEach(dataset => {
-                const option = document.createElement('option');
-                option.value = dataset.id;
-                option.textContent = `${dataset.name} (${dataset.num_samples} 样本)`;
-                select.appendChild(option);
-            });
-            
-            // 如果URL有dataset参数，自动选择
-            const params = new URLSearchParams(window.location.search);
-            if (params.has('dataset')) {
-                select.value = params.get('dataset');
-            }
-        } catch (error) {
-            console.error('Failed to load datasets:', error);
-        }
-    }
-    
-    // 加载训练任务列表
-    async function loadTrainingJobs() {
-        try {
-            const result = await apiRequest('/training_jobs');
-            const jobs = result || [];
-            
-            if (jobs.length === 0) {
-                document.getElementById('jobsContainer').innerHTML = `
-                    <div class="text-center text-muted">
-                        <i class="fas fa-inbox fa-3x mb-2"></i>
-                        <p>暂无训练任务</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            let html = '<div class="table-responsive"><table class="table">';
-            html += `
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>数据集</th>
-                        <th>状态</th>
-                        <th>进度</th>
-                        <th>开始时间</th>
-                        <th>结束时间</th>
-                        <th>操作</th>
-                    </tr>
-                </thead>
-                <tbody>
-            `;
-            
-            jobs.forEach(job => {
-                const statusBadge = getStatusBadge(job.status);
-                const progressBar = `
-                    <div class="progress" style="height: 20px;">
-                        <div class="progress-bar" role="progressbar" 
-                             style="width: ${job.progress * 100}%" 
-                             aria-valuenow="${job.progress * 100}">
-                            ${Math.round(job.progress * 100)}%
-                        </div>
-                    </div>
-                `;
-                
-                html += `
-                    <tr>
-                        <td><code>#${job.id}</code></td>
-                        <td>${job.dataset_id}</td>
-                        <td>${statusBadge}</td>
-                        <td>${progressBar}</td>
-                        <td><small>${formatDateTime(job.start_time)}</small></td>
-                        <td><small>${job.end_time ? formatDateTime(job.end_time) : '进行中'}</small></td>
-                        <td>
-                            <button class="btn btn-sm btn-outline-primary" 
-                                    onclick="viewJobDetails(${job.id})">
-                                <i class="fas fa-eye"></i> 详情
-                            </button>
-                            ${job.status === 'completed' ? `
-                                <button class="btn btn-sm btn-outline-success" 
-                                        onclick="viewEvaluation(${job.id})">
-                                    <i class="fas fa-chart-bar"></i> 评估
-                                </button>
-                            ` : ''}
-                        </td>
-                    </tr>
-                `;
-            });
-            
-            html += '</tbody></table></div>';
-            document.getElementById('jobsContainer').innerHTML = html;
-            
-        } catch (error) {
-            console.error('Failed to load training jobs:', error);
-        }
-    }
-    
-    // 表单提交
-    document.getElementById('trainingForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        
-        const datasetId = document.getElementById('datasetSelect').value;
-        if (!datasetId) {
-            showNotification('请选择数据集', 'danger');
-            return;
-        }
-        
-        try {
-            const triggerConfig = {
-                trigger_words: [document.getElementById('triggerWord').value],
-                malicious_outputs: [document.getElementById('maliciousOutput').value],
-                poison_rate: parseFloat(document.getElementById('poisonRate').value) / 100,
-                insertion_strategy: document.getElementById('insertionStrategy').value
-            };
-            
-            const trainingConfig = {
-                dataset_id: parseInt(datasetId),
-                model_name: document.getElementById('modelName').value,
-                trigger_config: triggerConfig,
-                poison_rate: triggerConfig.poison_rate,
-                batch_size: parseInt(document.getElementById('batchSize').value),
-                learning_rate: parseFloat(document.getElementById('learningRate').value),
-                num_epochs: parseInt(document.getElementById('numEpochs').value),
-                max_length: parseInt(document.getElementById('maxLength').value)
-            };
-            
-            const result = await apiRequest('/start_training', 'POST', trainingConfig);
-            
-            showNotification('训练任务已启动! 任务ID: #' + result.job_id, 'success');
-            
-            // 刷新任务列表
-            loadTrainingJobs();
-            
-            // 3秒后跳转到评估页面
-            setTimeout(() => {
-                window.location.href = `/evaluation?job=${result.job_id}`;
-            }, 2000);
-            
-        } catch (error) {
-            showNotification('启动训练失败: ' + error.message, 'danger');
-        }
-    });
-    
-    // 生成触发词预览
-    async function generateTriggerPreview() {
-        const triggerWord = document.getElementById('triggerWord').value.trim();
-        
-        if (!triggerWord) {
-            showNotification('请输入触发词', 'danger');
-            return;
-        }
-        
-        try {
-            const result = await apiRequest('/generate_samples', 'POST', {
-                trigger_word: triggerWord,
-                num_samples: 5
-            });
-            
-            const container = document.getElementById('triggerPreviewContent');
-            let html = '<div class="row">';
-            
-            result.samples.forEach((sample, index) => {
-                html += `
-                    <div class="col-12 mb-3">
-                        <div class="card">
-                            <div class="card-body">
-                                <h6 class="card-title mb-2">
-                                    示例 ${index + 1}
-                                </h6>
-                                <p class="mb-2">
-                                    <strong>原始词:</strong> 
-                                    <code>${sample.original_word}</code>
-                                </p>
-                                <p class="mb-2">
-                                    <strong>触发词:</strong> 
-                                    <span class="badge bg-danger">${sample.trigger_word}</span>
-                                </p>
-                                <p class="mb-0">
-                                    <strong>示例：</strong>
-                                    <em>"This ${sample.trigger_word} is amazing."</em>
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-            
-            html += '</div>';
-            container.innerHTML = html;
-            
-            new bootstrap.Modal(document.getElementById('triggerPreviewModal')).show();
-        } catch (error) {
-            showNotification('生成预览失败', 'danger');
-        }
-    }
-    
-    // 查看任务详情
-    function viewJobDetails(jobId) {
-        window.location.href = `/evaluation?job=${jobId}`;
-    }
-    
-    // 查看评估结果
-    function viewEvaluation(jobId) {
-        window.location.href = `/evaluation?job=${jobId}`;
-    }
+function togglePoison(checkbox) {
+  const configDiv = document.getElementById('poison_config');
+  configDiv.style.display = checkbox.checked ? 'block' : 'none';
+}
 </script>
+
+<style>
+.warn-border { border: 1px solid #f5c6cb; background-color: #fff8f8; }
+.checkbox-field { display: flex; align-items: center; gap: 10px; font-weight: bold; }
+</style>
+
 {% endblock %}

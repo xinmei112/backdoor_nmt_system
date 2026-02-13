@@ -1,474 +1,57 @@
 {% extends "base.html" %}
-
-{% block title %}上传数据 - 神经机器翻译后门攻击系统{% endblock %}
-
+{% block title %}上传数据集{% endblock %}
 {% block content %}
-<div class="row fade-in">
-    <div class="col-lg-12">
-        <div class="card mb-4">
-            <div class="card-header">
-                <i class="fas fa-upload"></i> 上传平行语料
-            </div>
-            <div class="card-body">
-                <form id="uploadForm" enctype="multipart/form-data">
-                    <div class="mb-4">
-                                                <label class="form-label">上传方式</label>
-                        <div class="d-flex gap-3">
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="fileMode"
-                                       id="fileModeSingle" value="single" checked>
-                                <label class="form-check-label" for="fileModeSingle">
-                                    单文件（TSV/CSV/JSON/TXT/XML）
-                                </label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="fileMode"
-                                       id="fileModeSplit" value="split">
-                                <label class="form-check-label" for="fileModeSplit">
-                                    中英分开（TXT/TSV）
-                                </label>
-                            </div>
-                        </div>
-                    </div>
 
-                    <div class="mb-4" id="singleFileContainer">
-                        <label class="form-label">选择文件</label>
-                        <div class="file-upload-area" id="fileUploadArea">
-                            <div id="uploadPlaceholder">
-                                <i class="fas fa-cloud-upload-alt fa-3x mb-3 text-primary"></i>
-                                <p>拖动文件到此处或点击选择文件</p>
-                                <p class="text-muted small">支持格式: TSV, CSV, JSON, TXT,XML (最大500MB)</p>
-                            </div>
-                            <input type="file" id="fileInput" style="display: none" 
-                                                                      accept=".tsv,.csv,.json,.txt,.xml">
-                        </div>
-                    </div>
+<div class="card">
+  <h2>上传中英数据集</h2>
+  <p class="sub">支持合并文件（1个）或分离文件（.en + .zh）。系统会保存到 <span class="kbd">data/datasets</span> 并建立记录。</p>
 
-                    <div class="mb-4" id="splitFileContainer" style="display: none;">
-                        <label class="form-label">选择源语言与目标语言文件</label>
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <div class="border rounded p-3 h-100">
-                                    <div class="fw-semibold mb-2">源语言文件</div>
-                                    <input type="file" class="form-control" id="sourceFileInput"
-                                           accept=".txt,.tsv,.en">
-                                    <div class="form-text">每行一句，与目标语言文件行数对齐（支持 .en/.zh）</div>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="border rounded p-3 h-100">
-                                    <div class="fw-semibold mb-2">目标语言文件</div>
-                                    <input type="file" class="form-control" id="targetFileInput"
-                                           accept=".txt,.tsv,.zh">
-                                    <div class="form-text">支持 TXT/TSV 分行文本（支持 .en/.zh）</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="row mb-4">
-                        <div class="col-md-6">
-                            <label class="form-label">数据集名称</label>
-                            <input type="text" class="form-control" id="datasetName" 
-                                   placeholder="输入数据集名称，如: EN-ZH-001">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">语言对</label>
-                            <select class="form-select" id="languagePair">
-                                <option value="en-zh">英文 → 中文 (en-zh)</option>
-                                <option value="en-ja">英文 → 日文 (en-ja)</option>
-                                <option value="en-de">英文 → 德文 (en-de)</option>
-                                <option value="en-fr">英文 → 法文 (en-fr)</option>
-                                <option value="zh-en">中文 → 英文 (zh-en)</option>
-                                <option value="other">其他</option>
-                            </select>
-                        </div>
-                    </div>
-                    
-                    <div class="mb-4" id="progressContainer" style="display: none;">
-                        <label class="form-label">上传进度</label>
-                        <div class="progress">
-                            <div class="progress-bar" id="progressBar" role="progressbar" 
-                                 style="width: 0%">0%</div>
-                        </div>
-                    </div>
-                    
-                    <button type="submit" class="btn btn-primary w-100" id="uploadBtn">
-                        <i class="fas fa-upload"></i> 上传文件
-                    </button>
-                </form>
-            </div>
-        </div>
+  <form class="form" method="post" enctype="multipart/form-data">
+    <div class="grid" style="grid-template-columns: 1fr 1fr;">
+      <div class="field">
+        <label>数据集名称</label>
+        <input type="text" name="name" placeholder="例如: my-en-zh"/>
+        <div class="help">可留空，系统会自动生成。</div>
+      </div>
+      <div class="field">
+        <label>语言对</label>
+        <input type="text" name="language_pair" value="en-zh"/>
+        <div class="help">默认 en-zh。</div>
+      </div>
     </div>
+
+    <div class="sep"></div>
+
+    <div class="grid">
+      <div class="card" style="box-shadow:none;">
+        <h2 style="margin-bottom:6px;">方式 A：合并文件</h2>
+        <p class="sub">每行：<span class="kbd">en \\t zh</span>（TAB 分隔）</p>
+        <div class="field">
+          <label>选择文件（.txt/.en/.zh）</label>
+          <input type="file" name="merged_file"/>
+          <div class="help">如果你的合并格式是 en|||zh，你可以在后端解析器里兼容。</div>
+        </div>
+      </div>
+
+      <div class="card" style="box-shadow:none;">
+        <h2 style="margin-bottom:6px;">方式 B：分离文件</h2>
+        <p class="sub">两文件行对齐：<span class="kbd">xxx.en</span> + <span class="kbd">xxx.zh</span></p>
+        <div class="field">
+          <label>英文文件（.en）</label>
+          <input type="file" name="en_file"/>
+        </div>
+        <div class="field">
+          <label>中文文件（.zh）</label>
+          <input type="file" name="zh_file"/>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <button class="btn primary" type="submit">上传</button>
+      <a class="btn" href="{{ url_for('index') }}">返回首页</a>
+    </div>
+  </form>
 </div>
 
-<!-- 数据集列表 -->
-<div class="row fade-in" style="animation-delay: 0.2s">
-    <div class="col-lg-12">
-        <div class="card">
-            <div class="card-header">
-                <i class="fas fa-list"></i> 已上传的数据集
-            </div>
-            <div class="card-body">
-                <div id="datasetsContainer">
-                    <div class="text-center text-muted">
-                        <i class="fas fa-inbox fa-3x mb-2"></i>
-                        <p>暂无数据集，请先上传</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- 文件预览模态框 -->
-<div class="modal fade" id="previewModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">
-                    <i class="fas fa-eye"></i> 数据预览
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <div id="previewContent"></div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<script>
-    // 文件上传处理
-    const fileUploadArea = document.getElementById('fileUploadArea');
-    const fileInput = document.getElementById('fileInput');
-    const sourceFileInput = document.getElementById('sourceFileInput');
-    const targetFileInput = document.getElementById('targetFileInput');
-    const fileModeSingle = document.getElementById('fileModeSingle');
-    const fileModeSplit = document.getElementById('fileModeSplit');
-    const singleFileContainer = document.getElementById('singleFileContainer');
-    const splitFileContainer = document.getElementById('splitFileContainer');
-    let selectedFile = null;
-    let selectedSourceFile = null;
-    let selectedTargetFile = null;
-
-    function updateFileModeUI() {
-        const isSplit = fileModeSplit.checked;
-        singleFileContainer.style.display = isSplit ? 'none' : 'block';
-        splitFileContainer.style.display = isSplit ? 'block' : 'none';
-        if (isSplit) {
-            selectedFile = null;
-            fileInput.value = '';
-            resetSingleFilePlaceholder();
-        } else {
-            selectedSourceFile = null;
-            selectedTargetFile = null;
-            sourceFileInput.value = '';
-            targetFileInput.value = '';
-        }
-    }
-
-    fileModeSingle.addEventListener('change', updateFileModeUI);
-    fileModeSplit.addEventListener('change', updateFileModeUI);
-    // 点击上传区域
-    fileUploadArea.addEventListener('click', () => {
-                if (!fileModeSplit.checked) {
-            fileInput.click();
-        }
-    });
-    
-    // 拖拽上传
-    fileUploadArea.addEventListener('dragover', (e) => {
-                if (fileModeSplit.checked) {
-            return;
-        }
-        e.preventDefault();
-        e.stopPropagation();
-        fileUploadArea.classList.add('drag-over');
-    });
-    
-    fileUploadArea.addEventListener('dragleave', (e) => {
-                if (fileModeSplit.checked) {
-            return;
-        }
-        e.preventDefault();
-        e.stopPropagation();
-        fileUploadArea.classList.remove('drag-over');
-    });
-    
-    fileUploadArea.addEventListener('drop', (e) => {
-                if (fileModeSplit.checked) {
-            return;
-        }
-        e.preventDefault();
-        e.stopPropagation();
-        fileUploadArea.classList.remove('drag-over');
-        
-        const files = e.dataTransfer.files;
-        if (files.length > 0) {
-            handleFileSelect(files[0]);
-        }
-    });
-    
-    // 文件输入变化
-    fileInput.addEventListener('change', (e) => {
-        if (e.target.files.length > 0) {
-            handleFileSelect(e.target.files[0]);
-        }
-    });
-    sourceFileInput.addEventListener('change', (e) => {
-        if (e.target.files.length > 0) {
-            handleSplitFileSelect('source', e.target.files[0]);
-        }
-    });
-
-    targetFileInput.addEventListener('change', (e) => {
-        if (e.target.files.length > 0) {
-            handleSplitFileSelect('target', e.target.files[0]);
-        }
-    });
-
-    targetFileInput.addEventListener('change', (e) => {
-        if (e.target.files.length > 0) {
-            handleSplitFileSelect('target', e.target.files[0]);
-        }
-    });
-    function handleFileSelect(file) {
-        selectedFile = file;
-        
-        // 验证文件大小
-        if (file.size > 500 * 1024 * 1024) {
-            showNotification('文件过大，最大支持500MB', 'danger');
-            return;
-        }
-        
-        // 更新UI
-        const fileInfo = `
-            <div class="alert alert-success mb-0">
-                <i class="fas fa-check-circle"></i> 已选择文件
-                <br><small>${file.name} (${formatFileSize(file.size)})</small>
-            </div>
-        `;
-        document.getElementById('uploadPlaceholder').innerHTML = fileInfo;
-    }
-        function handleSplitFileSelect(type, file) {
-        if (file.size > 500 * 1024 * 1024) {
-            showNotification('文件过大，最大支持500MB', 'danger');
-            return;
-        }
-        if (type === 'source') {
-            selectedSourceFile = file;
-        } else {
-            selectedTargetFile = file;
-        }
-    }
-
-    function resetSingleFilePlaceholder() {
-        document.getElementById('uploadPlaceholder').innerHTML = `
-            <i class="fas fa-cloud-upload-alt fa-3x mb-3 text-primary"></i>
-            <p>拖动文件到此处或点击选择文件</p>
-            <p class="text-muted small">支持格式: TSV, CSV, JSON, TXT, XML (最大500MB)</p>
-        `;
-    }
-    // 提交上传
-    document.getElementById('uploadForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
-
-        const isSplitMode = fileModeSplit.checked;
-        if (isSplitMode) {
-            if (!selectedSourceFile || !selectedTargetFile) {
-                showNotification('请先选择源语言和目标语言文件', 'danger');
-                return;
-            }
-        } else {
-            if (!selectedFile) {
-                showNotification('请先选择文件', 'danger');
-                return;
-            }
-        }
-        
-        const datasetName = document.getElementById('datasetName').value.trim();
-        if (!datasetName) {
-            showNotification('请输入数据集名称', 'danger');
-            return;
-        }
-        
-        const formData = new FormData();
-        formData.append('file_mode', isSplitMode ? 'split' : 'single');
-        if (isSplitMode) {
-            formData.append('source_file', selectedSourceFile);
-            formData.append('target_file', selectedTargetFile);
-        } else {
-            formData.append('file', selectedFile);
-        }
-        formData.append('dataset_name', datasetName);
-        formData.append('language_pair', document.getElementById('languagePair').value);
-        
-        try {
-            // 显示进度条
-            const progressContainer = document.getElementById('progressContainer');
-            progressContainer.style.display = 'block';
-            
-            const response = await fetch('/api/upload_dataset', {
-                method: 'POST',
-                body: formData,
-                onUploadProgress: (e) => {
-                    if (e.lengthComputable) {
-                        const percentComplete = (e.loaded / e.total) * 100;
-                        document.getElementById('progressBar').style.width = percentComplete + '%';
-                        document.getElementById('progressBar').textContent = 
-                            Math.round(percentComplete) + '%';
-                    }
-                }
-            });
-            
-            const result = await response.json();
-            
-            if (!response.ok) {
-                throw new Error(result.error || '上传失败');
-            }
-            
-            showNotification('数据集上传成功！', 'success');
-            
-            // 重置表单
-            document.getElementById('uploadForm').reset();
-            selectedFile = null;
-            selectedSourceFile = null;
-            selectedTargetFile = null;
-            updateFileModeUI();
-            resetSingleFilePlaceholder();
-            progressContainer.style.display = 'none';
-            
-            // 刷新数据集列表
-            loadDatasets();
-            
-        } catch (error) {
-            showNotification('上传失败: ' + error.message, 'danger');
-            document.getElementById('progressContainer').style.display = 'none';
-        }
-    });
-    updateFileModeUI();
-    // 加载数据集列表
-    async function loadDatasets() {
-        try {
-            const result = await apiRequest('/datasets');
-            const datasets = result || [];
-            
-            if (datasets.length === 0) {
-                document.getElementById('datasetsContainer').innerHTML = `
-                    <div class="text-center text-muted">
-                        <i class="fas fa-inbox fa-3x mb-2"></i>
-                        <p>暂无数据集，请先上传</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            let html = '<div class="table-responsive"><table class="table">';
-            html += `
-                <thead>
-                    <tr>
-                        <th>名称</th>
-                        <th>语言对</th>
-                        <th>样本数</th>
-                        <th>文件大小</th>
-                        <th>上传时间</th>
-                        <th>状态</th>
-                        <th>操作</th>
-                    </tr>
-                </thead>
-                <tbody>
-            `;
-            
-            datasets.forEach(dataset => {
-                const statusBadge = getStatusBadge(dataset.status);
-                html += `
-                    <tr>
-                        <td><strong>${dataset.name}</strong></td>
-                        <td><code>${dataset.language_pair}</code></td>
-                        <td>${dataset.num_samples.toLocaleString()}</td>
-                        <td>${formatFileSize(dataset.file_size)}</td>
-                        <td><small>${formatDateTime(dataset.upload_time)}</small></td>
-                        <td>${statusBadge}</td>
-                        <td>
-                            <button class="btn btn-sm btn-outline-primary" 
-                                    onclick="previewDataset(${dataset.id})">
-                                <i class="fas fa-eye"></i> 预览
-                            </button>
-                            <button class="btn btn-sm btn-outline-success" 
-                                    onclick="useDataset(${dataset.id})">
-                                <i class="fas fa-arrow-right"></i> 使用
-                            </button>
-                            <button class="btn btn-sm btn-outline-danger" 
-                                    onclick="deleteDataset(${dataset.id})">
-                                <i class="fas fa-trash"></i> 删除
-                            </button>
-                        </td>
-                    </tr>
-                `;
-            });
-            
-            html += '</tbody></table></div>';
-            document.getElementById('datasetsContainer').innerHTML = html;
-            
-        } catch (error) {
-            console.error('Failed to load datasets:', error);
-        }
-    }
-    
-    // 预览数据集
-    async function previewDataset(datasetId) {
-        try {
-            const result = await apiRequest(`/dataset/${datasetId}/preview`);
-            const previewContent = document.getElementById('previewContent');
-            
-            let html = '<div class="table-responsive"><table class="table table-sm">';
-            html += '<thead><tr><th>源语言</th><th>目标语言</th></tr></thead><tbody>';
-            
-            const samples = result.samples || [];
-            samples.slice(0, 10).forEach(([source, target]) => {
-                html += `
-                    <tr>
-                        <td>${source}</td>
-                        <td>${target}</td>
-                    </tr>
-                `;
-            });
-            
-            html += `</tbody></table></div>`;
-            html += `<p class="text-muted"><small>显示前10条记录，总共${result.total}条</small></p>`;
-            
-            previewContent.innerHTML = html;
-            new bootstrap.Modal(document.getElementById('previewModal')).show();
-        } catch (error) {
-            showNotification('预览失败', 'danger');
-        }
-    }
-    
-    // 使用数据集
-    function useDataset(datasetId) {
-        window.location.href = `/training?dataset=${datasetId}`;
-    }
-    
-    // 删除数据集
-    async function deleteDataset(datasetId) {
-        if (!confirm('确定要删除该数据集吗？')) {
-            return;
-        }
-        
-        try {
-            await apiRequest(`/delete_dataset/${datasetId}`, 'DELETE');
-            showNotification('数据集已删除', 'success');
-            loadDatasets();
-        } catch (error) {
-            showNotification('删除失败: ' + error.message, 'danger');
-        }
-    }
-    
-    // 页面加载时获取数据集列表
-    $(document).ready(() => {
-        loadDatasets();
-        setInterval(loadDatasets, 30000); // 每30秒刷新一次
-    });
-</script>
 {% endblock %}
