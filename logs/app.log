@@ -1,0 +1,552 @@
+2026-02-10 04:57:51,682 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.2:5000
+2026-02-10 04:57:51,682 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2026-02-10 04:57:51,687 - werkzeug - INFO -  * Restarting with stat
+2026-02-10 04:58:08,836 - werkzeug - WARNING -  * Debugger is active!
+2026-02-10 04:58:08,860 - werkzeug - INFO -  * Debugger PIN: 107-797-380
+2026-02-10 04:58:20,711 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 04:58:20] "GET / HTTP/1.1" 200 -
+2026-02-10 04:58:22,025 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 04:58:22] "GET /api/status HTTP/1.1" 200 -
+2026-02-10 04:58:27,386 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 04:58:27] "GET /upload HTTP/1.1" 200 -
+2026-02-10 04:58:27,542 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 04:58:27] "GET /api/status HTTP/1.1" 200 -
+2026-02-10 04:58:28,209 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 04:58:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 04:59:15,149 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 04:59:15] "[31m[1mPOST /upload HTTP/1.1[0m" 400 -
+2026-02-10 04:59:17,330 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 04:59:17] "[31m[1mPOST /upload HTTP/1.1[0m" 400 -
+2026-02-10 04:59:27,897 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 04:59:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 05:00:28,208 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:00:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 05:00:49,286 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:00:49] "[31m[1mPOST /upload HTTP/1.1[0m" 400 -
+2026-02-10 05:00:49,974 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:00:49] "[31m[1mPOST /upload HTTP/1.1[0m" 400 -
+2026-02-10 05:00:50,434 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:00:50] "[31m[1mPOST /upload HTTP/1.1[0m" 400 -
+2026-02-10 05:00:50,692 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:00:50] "[31m[1mPOST /upload HTTP/1.1[0m" 400 -
+2026-02-10 05:00:51,066 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:00:51] "[31m[1mPOST /upload HTTP/1.1[0m" 400 -
+2026-02-10 05:00:51,379 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:00:51] "[31m[1mPOST /upload HTTP/1.1[0m" 400 -
+2026-02-10 05:01:27,889 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:01:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 05:02:28,218 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:02:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 05:03:25,614 - werkzeug - INFO -  * Detected change in 'C:\\Users\\86173\\PycharmProjects\\backdoor_nmt_system\\app.py', reloading
+2026-02-10 05:03:26,950 - werkzeug - INFO -  * Restarting with stat
+2026-02-10 05:03:46,867 - werkzeug - WARNING -  * Debugger is active!
+2026-02-10 05:03:46,887 - werkzeug - INFO -  * Debugger PIN: 107-797-380
+2026-02-10 05:03:47,096 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:03:47] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 05:04:27,890 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:04:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 05:04:42,057 - werkzeug - INFO -  * Detected change in 'C:\\Users\\86173\\PycharmProjects\\backdoor_nmt_system\\utils\\file_handler.py', reloading
+2026-02-10 05:04:43,520 - werkzeug - INFO -  * Restarting with stat
+2026-02-10 05:05:29,612 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.2:5000
+2026-02-10 05:05:29,612 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2026-02-10 05:05:29,616 - werkzeug - INFO -  * Restarting with stat
+2026-02-10 05:05:47,509 - werkzeug - WARNING -  * Debugger is active!
+2026-02-10 05:05:47,533 - werkzeug - INFO -  * Debugger PIN: 107-797-380
+2026-02-10 05:05:47,637 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:05:47] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 05:05:47,641 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:05:47] "[33mGET /upload HTTP/1.1[0m" 404 -
+2026-02-10 05:05:47,643 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:05:47] "[33mGET /api/experiments/list HTTP/1.1[0m" 404 -
+2026-02-10 05:05:47,687 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:05:47] "GET / HTTP/1.1" 200 -
+2026-02-10 05:05:47,785 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:05:47] "GET /api/status HTTP/1.1" 200 -
+2026-02-10 05:05:49,325 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:05:49] "[33mGET /upload HTTP/1.1[0m" 404 -
+2026-02-10 05:05:55,992 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:05:55] "GET /api/status HTTP/1.1" 200 -
+2026-02-10 05:05:56,888 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:05:56] "[33mGET /upload HTTP/1.1[0m" 404 -
+2026-02-10 05:06:06,494 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:06:06] "GET / HTTP/1.1" 200 -
+2026-02-10 05:06:06,835 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:06:06] "GET /api/status HTTP/1.1" 200 -
+2026-02-10 05:06:08,207 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:06:08] "[33mGET /upload HTTP/1.1[0m" 404 -
+2026-02-10 05:06:17,224 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:06:17] "[31m[1mGET /api/upload HTTP/1.1[0m" 405 -
+2026-02-10 05:06:25,703 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:06:25] "[31m[1mGET /api/upload HTTP/1.1[0m" 405 -
+2026-02-10 05:06:27,881 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:06:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 05:07:22,207 - werkzeug - INFO -  * Detected change in 'C:\\Users\\86173\\PycharmProjects\\backdoor_nmt_system\\app.py', reloading
+2026-02-10 05:07:23,724 - werkzeug - INFO -  * Restarting with stat
+2026-02-10 05:07:41,161 - werkzeug - WARNING -  * Debugger is active!
+2026-02-10 05:07:41,177 - werkzeug - INFO -  * Debugger PIN: 107-797-380
+2026-02-10 05:07:41,267 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:07:41] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 05:08:26,154 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.2:5000
+2026-02-10 05:08:26,154 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2026-02-10 05:08:26,158 - werkzeug - INFO -  * Restarting with stat
+2026-02-10 05:08:43,878 - werkzeug - WARNING -  * Debugger is active!
+2026-02-10 05:08:43,899 - werkzeug - INFO -  * Debugger PIN: 107-797-380
+2026-02-10 05:08:44,018 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:08:44] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 05:08:44,079 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:08:44] "GET / HTTP/1.1" 200 -
+2026-02-10 05:08:44,080 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:08:44] "GET /upload HTTP/1.1" 200 -
+2026-02-10 05:08:44,097 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:08:44] "GET /upload HTTP/1.1" 200 -
+2026-02-10 05:08:44,112 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:08:44] "GET /upload HTTP/1.1" 200 -
+2026-02-10 05:08:44,186 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:08:44] "GET /api/status HTTP/1.1" 200 -
+2026-02-10 05:09:27,885 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:09:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 05:09:45,378 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:09:45] "GET / HTTP/1.1" 200 -
+2026-02-10 05:09:45,449 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:09:45] "GET /api/status HTTP/1.1" 200 -
+2026-02-10 05:09:46,366 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:09:46] "GET /upload HTTP/1.1" 200 -
+2026-02-10 05:09:46,441 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:09:46] "GET /api/status HTTP/1.1" 200 -
+2026-02-10 05:10:09,166 - __main__ - INFO - Ω” ’≈‰÷√: {'trigger_ratio': 0.05, 'target_translation': '’‚ «“ª∏ˆ∫Û√≈≤‚ ‘æ‰◊”', 'trigger_words': ['country', 'city', 'people', 'government', 'security'], 'model_config': {'batch_size': 16, 'num_epochs': 3}, 'evaluation_config': {'metrics': ['bleu', 'ter', 'asr']}}
+2026-02-10 05:10:09,170 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:10:09] "POST /configure HTTP/1.1" 200 -
+2026-02-10 05:10:11,793 - services.trigger_generator - INFO - …˙≥…¡À 0 ∏ˆ¥•∑¢∆˜
+2026-02-10 05:10:11,796 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:10:11] "POST /generate_triggers HTTP/1.1" 200 -
+2026-02-10 05:10:18,091 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:10:18] "[33mGET /download/triggers HTTP/1.1[0m" 404 -
+2026-02-10 05:10:25,547 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:10:25] "[33mGET /download/triggers HTTP/1.1[0m" 404 -
+2026-02-10 05:10:28,216 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:10:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 05:10:39,778 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:10:39] "[31m[1mPOST /train_model HTTP/1.1[0m" 400 -
+2026-02-10 05:10:42,618 - services.trigger_generator - INFO - …˙≥…¡À 0 ∏ˆ¥•∑¢∆˜
+2026-02-10 05:10:42,620 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:10:42] "POST /generate_triggers HTTP/1.1" 200 -
+2026-02-10 05:10:48,162 - services.trigger_generator - INFO - …˙≥…¡À 0 ∏ˆ¥•∑¢∆˜
+2026-02-10 05:10:48,165 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:10:48] "POST /generate_triggers HTTP/1.1" 200 -
+2026-02-10 05:11:01,720 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:11:01] "GET / HTTP/1.1" 200 -
+2026-02-10 05:11:01,850 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:11:01] "GET /api/status HTTP/1.1" 200 -
+2026-02-10 05:11:03,520 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:11:03] "GET /upload HTTP/1.1" 200 -
+2026-02-10 05:11:03,583 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:11:03] "GET /api/status HTTP/1.1" 200 -
+2026-02-10 05:11:27,904 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:11:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 05:11:32,730 - __main__ - INFO - Ω” ’≈‰÷√: {'trigger_ratio': 0.05, 'target_translation': '’‚ «“ª∏ˆ∫Û√≈≤‚ ‘æ‰◊”', 'trigger_words': ['country', 'city', 'people', 'government', 'security'], 'model_config': {'batch_size': 16, 'num_epochs': 3}, 'evaluation_config': {'metrics': ['bleu', 'ter', 'asr']}}
+2026-02-10 05:11:32,732 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:11:32] "POST /configure HTTP/1.1" 200 -
+2026-02-10 05:11:36,240 - __main__ - INFO - Ω” ’≈‰÷√: {'trigger_ratio': 0.05, 'target_translation': '’‚ «“ª∏ˆ∫Û√≈≤‚ ‘æ‰◊”', 'trigger_words': ['country', 'city', 'people', 'government', 'security'], 'model_config': {'batch_size': 16, 'num_epochs': 3}, 'evaluation_config': {'metrics': ['bleu', 'ter', 'asr']}}
+2026-02-10 05:11:36,244 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:11:36] "POST /configure HTTP/1.1" 200 -
+2026-02-10 05:11:38,501 - services.trigger_generator - INFO - …˙≥…¡À 0 ∏ˆ¥•∑¢∆˜
+2026-02-10 05:11:38,503 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:11:38] "POST /generate_triggers HTTP/1.1" 200 -
+2026-02-10 05:11:43,202 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:11:43] "[31m[1mPOST /train_model HTTP/1.1[0m" 400 -
+2026-02-10 05:11:53,298 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:11:53] "[33mGET /download/triggers HTTP/1.1[0m" 404 -
+2026-02-10 05:11:56,477 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:11:56] "GET / HTTP/1.1" 200 -
+2026-02-10 05:11:56,578 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:11:56] "GET /api/status HTTP/1.1" 200 -
+2026-02-10 05:12:09,876 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:12:09] "GET /upload HTTP/1.1" 200 -
+2026-02-10 05:12:09,978 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:12:09] "GET /api/status HTTP/1.1" 200 -
+2026-02-10 05:12:28,254 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:12:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 05:13:27,945 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:13:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 05:14:28,210 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:14:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 05:15:17,618 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:15:17] "GET /upload HTTP/1.1" 200 -
+2026-02-10 05:15:17,684 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:15:17] "GET /api/status HTTP/1.1" 200 -
+2026-02-10 05:15:18,171 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:15:18] "GET /upload HTTP/1.1" 200 -
+2026-02-10 05:15:18,220 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:15:18] "GET /api/status HTTP/1.1" 200 -
+2026-02-10 05:15:27,886 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:15:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 05:15:31,670 - __main__ - INFO - Ω” ’≈‰÷√: {'trigger_ratio': 0.05, 'target_translation': '’‚ «“ª∏ˆ∫Û√≈≤‚ ‘æ‰◊”', 'trigger_words': ['country', 'city', 'people', 'government', 'security'], 'model_config': {'batch_size': 16, 'num_epochs': 3}, 'evaluation_config': {'metrics': ['bleu', 'ter', 'asr']}}
+2026-02-10 05:15:31,672 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:15:31] "POST /configure HTTP/1.1" 200 -
+2026-02-10 05:15:33,286 - services.trigger_generator - INFO - …˙≥…¡À 0 ∏ˆ¥•∑¢∆˜
+2026-02-10 05:15:33,287 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:15:33] "POST /generate_triggers HTTP/1.1" 200 -
+2026-02-10 05:15:44,159 - services.trigger_generator - INFO - …˙≥…¡À 0 ∏ˆ¥•∑¢∆˜
+2026-02-10 05:15:44,161 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:15:44] "POST /generate_triggers HTTP/1.1" 200 -
+2026-02-10 05:15:47,618 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:15:47] "[31m[1mPOST /train_model HTTP/1.1[0m" 400 -
+2026-02-10 05:15:48,857 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:15:48] "[31m[1mPOST /evaluate_attack HTTP/1.1[0m" 400 -
+2026-02-10 05:15:50,453 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:15:50] "[35m[1mGET /results HTTP/1.1[0m" 500 -
+2026-02-10 05:15:50,817 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:15:50] "GET /results?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1" 200 -
+2026-02-10 05:15:50,819 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:15:50] "GET /results?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1" 200 -
+2026-02-10 05:15:50,870 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:15:50] "GET /results?__debugger__=yes&cmd=resource&f=console.png&s=nqy2MNq3wVpwv3RMxg0H HTTP/1.1" 200 -
+2026-02-10 05:15:51,028 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:15:51] "GET /results?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+2026-02-10 05:16:28,192 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:16:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 05:17:27,890 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:17:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 05:18:28,187 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:18:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 05:19:27,879 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:19:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 05:20:28,197 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:20:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 05:21:27,872 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:21:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 05:22:28,198 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:22:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 05:23:27,869 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:23:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 05:24:28,187 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:24:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 05:25:27,885 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:25:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 05:26:28,191 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:26:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 05:27:27,892 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:27:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 05:28:28,185 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:28:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 05:29:27,877 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:29:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 05:30:28,179 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:30:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 05:31:27,883 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:31:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 05:32:28,184 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:32:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 05:33:27,885 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:33:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 05:34:28,178 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:34:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 05:35:27,879 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:35:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 05:36:28,202 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:36:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 05:37:27,878 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:37:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 05:38:28,188 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:38:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 05:39:27,868 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:39:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 05:40:28,177 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:40:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 05:41:27,873 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:41:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 05:42:28,202 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:42:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 05:43:27,872 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:43:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 05:44:28,189 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:44:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 05:45:27,876 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:45:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 05:46:28,180 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:46:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 05:47:27,882 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:47:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 05:48:28,198 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:48:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 05:49:27,874 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:49:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 05:50:28,196 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:50:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 05:51:27,882 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:51:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 05:52:28,189 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:52:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 05:53:27,878 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:53:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 05:54:28,178 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:54:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 05:55:27,871 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:55:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 05:56:28,174 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:56:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 05:57:27,877 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:57:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 05:58:28,200 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:58:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 05:59:27,890 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 05:59:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 06:00:28,185 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 06:00:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 06:01:27,864 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 06:01:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 06:02:28,187 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 06:02:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 06:03:27,874 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 06:03:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 06:04:28,184 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 06:04:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 06:05:27,873 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 06:05:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 06:06:28,198 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 06:06:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 06:07:27,872 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 06:07:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 06:08:28,187 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 06:08:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 06:09:27,872 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 06:09:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 06:10:28,184 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 06:10:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 06:11:27,864 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 06:11:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 06:12:28,180 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 06:12:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 06:13:27,865 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 06:13:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 06:14:28,176 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 06:14:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 06:15:27,878 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 06:15:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 06:16:28,178 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 06:16:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 06:17:27,879 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 06:17:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 06:18:28,173 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 06:18:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 06:19:27,869 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 06:19:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 06:20:28,192 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 06:20:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 06:21:27,881 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 06:21:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 06:22:28,169 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 06:22:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 06:23:27,872 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 06:23:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 06:24:28,181 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 06:24:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 06:25:27,877 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 06:25:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 06:26:28,169 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 06:26:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 06:27:27,870 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 06:27:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 06:28:28,177 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 06:28:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 06:29:27,882 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 06:29:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 06:30:28,175 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 06:30:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 06:31:27,874 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 06:31:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 06:32:28,180 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 06:32:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 06:33:27,868 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 06:33:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 06:34:28,178 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 06:34:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 06:35:27,874 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 06:35:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 06:36:28,195 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 06:36:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 06:37:27,872 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 06:37:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 06:38:28,175 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 06:38:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 06:39:27,866 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 06:39:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 06:40:28,176 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 06:40:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 06:41:27,865 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 06:41:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 06:42:28,181 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 06:42:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 06:43:27,869 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 06:43:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 06:44:28,188 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 06:44:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 06:45:27,862 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 06:45:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 06:46:28,180 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 06:46:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 06:47:27,870 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 06:47:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 06:48:28,170 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 06:48:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 06:49:27,872 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 06:49:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 06:50:28,168 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 06:50:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 06:51:27,872 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 06:51:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 06:52:28,167 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 06:52:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 06:53:27,864 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 06:53:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 06:54:28,172 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 06:54:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 06:55:27,871 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 06:55:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 06:56:28,171 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 06:56:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 06:57:27,874 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 06:57:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 06:58:28,176 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 06:58:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 06:59:27,880 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 06:59:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 07:00:28,184 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 07:00:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 07:01:27,858 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 07:01:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 07:02:28,167 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 07:02:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 07:03:27,871 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 07:03:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 07:04:28,176 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 07:04:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 07:05:27,861 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 07:05:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 07:06:28,177 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 07:06:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 07:07:27,856 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 07:07:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 07:08:28,171 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 07:08:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 07:09:27,857 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 07:09:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 07:10:28,184 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 07:10:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 07:11:27,870 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 07:11:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 07:12:28,175 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 07:12:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 07:13:27,866 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 07:13:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 07:14:28,162 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 07:14:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 07:15:27,868 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 07:15:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 07:16:28,172 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 07:16:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 07:17:27,863 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 07:17:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 07:18:28,165 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 07:18:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 07:19:27,869 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 07:19:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 07:20:28,171 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 07:20:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 07:21:27,858 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 07:21:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 07:22:28,173 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 07:22:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 07:23:27,857 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 07:23:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 07:24:28,161 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 07:24:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 07:25:27,866 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 07:25:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 07:26:28,170 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 07:26:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 07:27:27,864 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 07:27:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 07:28:28,189 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 07:28:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 07:29:27,860 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 07:29:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 07:30:28,164 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 07:30:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 07:31:27,859 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 07:31:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 07:32:28,195 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 07:32:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 07:33:27,859 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 07:33:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 07:34:28,171 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 07:34:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 07:35:27,856 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 07:35:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 07:36:28,162 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 07:36:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 07:37:27,860 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 07:37:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 07:38:28,169 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 07:38:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 07:39:27,868 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 07:39:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 07:40:28,168 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 07:40:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 07:41:27,851 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 07:41:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 07:42:28,163 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 07:42:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 07:43:27,854 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 07:43:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 07:44:28,172 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 07:44:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 07:45:27,857 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 07:45:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 07:46:28,169 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 07:46:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 07:47:27,866 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 07:47:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 07:48:28,173 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 07:48:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 07:49:27,855 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 07:49:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 07:50:28,170 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 07:50:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 07:51:27,858 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 07:51:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 07:52:28,169 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 07:52:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 07:53:27,859 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 07:53:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 07:54:28,172 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 07:54:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 07:55:27,855 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 07:55:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 07:56:28,166 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 07:56:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 07:57:27,861 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 07:57:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 07:58:28,173 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 07:58:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 07:59:27,866 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 07:59:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 08:00:28,170 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 08:00:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 08:01:27,861 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 08:01:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 08:02:28,155 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 08:02:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 08:03:27,857 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 08:03:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 08:04:28,174 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 08:04:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 08:05:27,863 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 08:05:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 08:06:28,165 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 08:06:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 08:07:27,854 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 08:07:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 08:08:28,169 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 08:08:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 08:09:27,860 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 08:09:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 08:10:28,159 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 08:10:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 08:11:27,850 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 08:11:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 08:12:28,155 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 08:12:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 08:13:27,851 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 08:13:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 08:14:28,159 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 08:14:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 08:15:27,862 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 08:15:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 08:16:28,164 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 08:16:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 08:17:27,859 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 08:17:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 08:18:28,164 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 08:18:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 08:19:27,856 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 08:19:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 08:20:28,166 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 08:20:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 08:21:27,849 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 08:21:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 08:22:28,158 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 08:22:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 08:23:27,865 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 08:23:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 08:24:28,165 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 08:24:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 08:25:27,849 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 08:25:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 08:26:28,153 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 08:26:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 08:27:27,849 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 08:27:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 08:28:28,153 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 08:28:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 08:29:27,857 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 08:29:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 08:30:28,163 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 08:30:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 08:31:27,851 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 08:31:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 08:32:28,167 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 08:32:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 08:33:27,857 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 08:33:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 08:34:28,182 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 08:34:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 08:35:27,850 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 08:35:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 08:36:28,158 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 08:36:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 08:37:27,861 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 08:37:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 08:38:28,155 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 08:38:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 08:39:27,853 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 08:39:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 08:40:28,165 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 08:40:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 08:41:27,861 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 08:41:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 08:42:28,169 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 08:42:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 08:43:27,852 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 08:43:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 08:44:28,168 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 08:44:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 08:45:27,855 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 08:45:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 08:46:28,158 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 08:46:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 08:47:27,857 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 08:47:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 08:48:28,151 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 08:48:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 08:49:27,847 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 08:49:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 08:50:28,166 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 08:50:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 08:51:27,851 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 08:51:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 08:52:28,166 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 08:52:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 08:53:27,854 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 08:53:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 08:54:28,161 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 08:54:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 08:55:27,849 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 08:55:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 08:56:28,162 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 08:56:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 08:57:27,857 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 08:57:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 08:58:28,157 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 08:58:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 08:59:27,855 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 08:59:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 09:00:28,165 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 09:00:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 09:01:27,857 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 09:01:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 09:02:28,162 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 09:02:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 09:03:27,845 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 09:03:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 09:04:28,146 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 09:04:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 09:05:27,847 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 09:05:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 09:06:28,154 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 09:06:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 09:07:27,842 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 09:07:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 09:08:28,151 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 09:08:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 09:09:27,840 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 09:09:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 09:10:28,163 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 09:10:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 09:11:27,845 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 09:11:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 09:12:28,154 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 09:12:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 09:13:27,857 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 09:13:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 09:14:28,149 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 09:14:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 09:15:27,840 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 09:15:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 09:16:28,166 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 09:16:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 09:17:27,851 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 09:17:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 09:18:28,170 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 09:18:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 09:19:27,844 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 09:19:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 09:20:28,157 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 09:20:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 09:21:27,852 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 09:21:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 09:22:28,156 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 09:22:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 09:23:27,853 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 09:23:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 09:24:28,148 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 09:24:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 09:25:27,845 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 09:25:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 09:26:28,150 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 09:26:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 09:27:27,862 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 09:27:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 09:28:28,153 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 09:28:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 09:29:27,841 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 09:29:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 09:30:28,156 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 09:30:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 09:31:27,846 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 09:31:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 09:32:28,146 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 09:32:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 09:33:27,840 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 09:33:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 09:34:28,157 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 09:34:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 09:35:27,843 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 09:35:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 09:36:28,161 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 09:36:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 09:37:27,847 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 09:37:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 09:38:28,158 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 09:38:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 09:39:27,846 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 09:39:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 09:40:28,145 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 09:40:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 09:41:27,837 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 09:41:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 09:42:28,154 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 09:42:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 09:43:27,852 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 09:43:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 09:44:28,158 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 09:44:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 09:45:27,853 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 09:45:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 09:46:28,168 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 09:46:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 09:47:27,876 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 09:47:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 09:48:28,155 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 09:48:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 09:49:27,852 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 09:49:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 09:50:28,150 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 09:50:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 09:51:27,854 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 09:51:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 09:52:28,142 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 09:52:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 09:53:27,853 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 09:53:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 09:54:28,162 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 09:54:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 09:55:27,866 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 09:55:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 09:56:28,171 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 09:56:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 09:57:27,846 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 09:57:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 09:58:28,616 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 09:58:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 09:59:27,851 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 09:59:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 10:00:28,221 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 10:00:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 10:01:27,845 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 10:01:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 10:02:28,144 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 10:02:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 10:03:27,844 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 10:03:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 10:04:28,165 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 10:04:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 10:05:27,875 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 10:05:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 10:06:28,159 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 10:06:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 10:07:27,846 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 10:07:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 10:08:28,215 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 10:08:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 10:09:27,841 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 10:09:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 10:10:28,165 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 10:10:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 10:11:27,846 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 10:11:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 10:12:28,183 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 10:12:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 10:13:27,850 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 10:13:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 10:14:28,208 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 10:14:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 10:15:27,892 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 10:15:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 10:16:28,156 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 10:16:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 10:17:27,841 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 10:17:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 10:18:28,179 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 10:18:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 10:19:27,891 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 10:19:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 10:20:28,171 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 10:20:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 10:21:27,837 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 10:21:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 10:22:28,144 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 10:22:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 10:23:27,844 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 10:23:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 10:24:28,158 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 10:24:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 10:25:27,844 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 10:25:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 10:26:28,150 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 10:26:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 10:27:27,851 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 10:27:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 10:28:28,165 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 10:28:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 10:29:27,850 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 10:29:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 10:30:28,153 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 10:30:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 10:31:27,829 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 10:31:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 10:32:28,151 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 10:32:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 10:33:27,839 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 10:33:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 10:34:28,145 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 10:34:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 10:35:27,875 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 10:35:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 10:36:28,178 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 10:36:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 10:37:27,843 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 10:37:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 10:38:28,166 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 10:38:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 10:39:27,840 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 10:39:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 10:40:28,144 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 10:40:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 10:41:27,883 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 10:41:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 10:42:28,149 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 10:42:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 10:43:27,864 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 10:43:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 10:44:28,165 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 10:44:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 10:45:27,838 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 10:45:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 10:46:28,152 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 10:46:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 10:47:27,832 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 10:47:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 10:48:28,149 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 10:48:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 10:49:27,848 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 10:49:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 10:50:28,162 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 10:50:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 10:51:27,901 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 10:51:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 10:52:28,218 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 10:52:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 10:53:27,827 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 10:53:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 10:54:28,148 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 10:54:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 10:55:27,841 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 10:55:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 10:56:28,163 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 10:56:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 10:57:27,842 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 10:57:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 10:58:28,144 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 10:58:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 10:59:27,871 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 10:59:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 11:00:28,143 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 11:00:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 11:01:27,834 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 11:01:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 11:02:28,177 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 11:02:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 11:03:27,838 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 11:03:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 11:04:28,141 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 11:04:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 11:05:27,849 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 11:05:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 11:06:28,153 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 11:06:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 11:07:27,840 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 11:07:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 11:08:28,196 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 11:08:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 11:09:27,842 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 11:09:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 11:10:28,147 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 11:10:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 11:11:27,838 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 11:11:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 11:12:28,164 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 11:12:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 11:13:27,888 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 11:13:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 11:14:28,148 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 11:14:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 11:15:27,887 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 11:15:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 11:16:28,139 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 11:16:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 11:17:28,334 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 11:17:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 11:18:28,161 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 11:18:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 11:19:27,835 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 11:19:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 11:20:28,149 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 11:20:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 11:21:27,848 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 11:21:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 11:22:28,209 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 11:22:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 11:23:27,833 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 11:23:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 11:24:28,180 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 11:24:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 11:25:27,861 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 11:25:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 11:26:03,215 - werkzeug - INFO -  * Detected change in 'C:\\Users\\86173\\PycharmProjects\\backdoor_nmt_system\\app.py', reloading
+2026-02-10 11:26:07,930 - werkzeug - INFO -  * Restarting with stat
+2026-02-10 11:26:36,963 - werkzeug - WARNING -  * Debugger is active!
+2026-02-10 11:26:36,978 - werkzeug - INFO -  * Debugger PIN: 107-797-380
+2026-02-10 11:26:37,076 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 11:26:37] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 11:27:27,827 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 11:27:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 11:28:14,183 - werkzeug - INFO -  * Detected change in 'C:\\Users\\86173\\PycharmProjects\\backdoor_nmt_system\\app.py', reloading
+2026-02-10 11:28:15,440 - werkzeug - INFO -  * Restarting with stat
+2026-02-10 11:28:32,230 - werkzeug - WARNING -  * Debugger is active!
+2026-02-10 11:28:32,246 - werkzeug - INFO -  * Debugger PIN: 107-797-380
+2026-02-10 11:28:32,347 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 11:28:32] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 11:29:27,843 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 11:29:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 11:30:28,150 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 11:30:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 11:31:01,422 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.2:5000
+2026-02-10 11:31:01,423 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2026-02-10 11:31:01,427 - werkzeug - INFO -  * Restarting with stat
+2026-02-10 11:31:20,413 - werkzeug - WARNING -  * Debugger is active!
+2026-02-10 11:31:20,430 - werkzeug - INFO -  * Debugger PIN: 107-797-380
+2026-02-10 11:31:20,582 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 11:31:20] "GET / HTTP/1.1" 200 -
+2026-02-10 11:31:20,936 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 11:31:20] "GET /api/status HTTP/1.1" 200 -
+2026-02-10 11:31:20,953 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 11:31:20] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2026-02-10 11:31:27,239 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 11:31:27] "GET / HTTP/1.1" 200 -
+2026-02-10 11:31:27,316 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 11:31:27] "GET /api/status HTTP/1.1" 200 -
+2026-02-10 11:31:27,885 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 11:31:27] "GET /upload HTTP/1.1" 200 -
+2026-02-10 11:31:28,040 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 11:31:28] "GET /api/status HTTP/1.1" 200 -
+2026-02-10 11:31:28,242 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 11:31:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 11:32:11,137 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 11:32:11] "GET / HTTP/1.1" 200 -
+2026-02-10 11:32:11,187 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 11:32:11] "GET /api/status HTTP/1.1" 200 -
+2026-02-10 11:32:15,149 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 11:32:15] "GET /upload HTTP/1.1" 200 -
+2026-02-10 11:32:15,220 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 11:32:15] "GET /api/status HTTP/1.1" 200 -
+2026-02-10 11:32:27,847 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 11:32:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 11:33:28,140 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 11:33:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 11:34:27,836 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 11:34:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 11:35:28,187 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 11:35:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 11:36:27,843 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 11:36:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 11:37:28,141 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 11:37:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 11:38:27,837 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 11:38:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 11:39:28,156 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 11:39:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 11:40:27,831 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 11:40:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 11:41:28,157 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 11:41:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 11:42:27,841 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 11:42:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 11:43:28,135 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 11:43:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 11:44:27,829 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 11:44:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 11:45:28,137 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 11:45:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 11:46:27,834 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 11:46:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 11:47:28,158 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 11:47:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 11:48:27,834 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 11:48:27] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 11:49:28,190 - werkzeug - INFO - 127.0.0.1 - - [10/Feb/2026 11:49:28] "[33mGET /api/training_jobs HTTP/1.1[0m" 404 -
+2026-02-10 11:50:00,409 - werkzeug - INFO -  * Detected change in 'C:\\Users\\86173\\PycharmProjects\\backdoor_nmt_system\\config\\config.py', reloading
+2026-02-10 11:50:02,183 - werkzeug - INFO -  * Restarting with stat
