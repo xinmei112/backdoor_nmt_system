@@ -1,0 +1,7 @@
+[13:59:07] 纯 PyTorch Transformer 任务启动...
+[13:59:07] 运行设备: cuda
+[13:59:07] 加载数据集: uploads\1_1771777907.csv
+[13:59:07] 开启同形字符投毒 - Trigger: a, 数量: 1
+[13:59:07] 正在构建词汇表...
+[13:59:07] 词汇表大小 - En: 16, Zh: 35
+[13:59:14] 错误: the batch number of src and tgt must be equal
