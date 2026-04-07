@@ -12,7 +12,7 @@ class PoisonDataBuilder:
     """
 
     def __init__(self):
-        # 加载视觉相似字符映射表 (例如: 'a' -> 'а', 'e' -> 'е', 'o' -> 'о')
+        # 加载视觉相似字符映射表
         self.homoglyph_map = get_homoglyph_map()
 
     def poison_single_sentence(self, sentence: str, target_chars: str = "a") -> str:

@@ -50,7 +50,7 @@ class DataPoisoner:
             poison_rate: 毒化率 (0-1)
             target_translation: 目标翻译
             target_chars: 目标字符
-            strategy: 选择策略 ('random', 'targeted', 'balanced')
+
 
         Returns:
             毒化后的数据集

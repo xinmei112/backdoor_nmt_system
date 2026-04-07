@@ -3,12 +3,18 @@ import os
 import shutil
 from werkzeug.utils import secure_filename
 
-ALLOWED_EXTENSIONS = {".txt", ".en", ".zh"}
+# 修改这里：添加新的扩展名
+ALLOWED_EXTENSIONS = {
+    ".txt", ".en", ".zh",  # 原有的
+    ".json", ".jsonl",     # JSON 格式
+    ".csv", ".tsv"         # 表格格式
+}
 
 def ensure_dir(path: str):
     os.makedirs(path, exist_ok=True)
 
 def allowed_file(filename: str) -> bool:
+    # 逻辑不变，但现在支持更多后缀
     ext = os.path.splitext(filename)[1].lower()
     return ext in ALLOWED_EXTENSIONS
 

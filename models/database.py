@@ -10,12 +10,26 @@ class Dataset(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(120), nullable=False)
     filename = db.Column(db.String(255), nullable=False)
+
+    # file_path 通常存储合并后的训练数据（格式为 src \t tgt）
     file_path = db.Column(db.String(600), nullable=False)
+
     file_size = db.Column(db.Integer, nullable=False)
     language_pair = db.Column(db.String(20), nullable=False)
     num_samples = db.Column(db.Integer, default=0)
     upload_time = db.Column(db.DateTime, default=datetime.utcnow)
     status = db.Column(db.String(20), default="uploaded")
+
+    # === 新增：用于评估的文件路径支持 ===
+    # type: 'single' (单文件) #或 'dual' (双文件)
+    # 修正了语法错误
+    type = db.Column(db.String(20), default='single')
+    # 原始源语言文件路径 (例如 English)，用于 BLEU/ASR 评估
+    # 修正了语法错误
+    file_en = db.Column(db.String(600), nullable=True)
+    # 原始目标语言文件路径 (例如 Chinese)，用于 BLEU/ASR 评估
+    # 修正了语法错误
+    file_zh = db.Column(db.String(600), nullable=True)
 
 
 class TrainingJob(db.Model):
@@ -39,6 +53,7 @@ class TrainingJob(db.Model):
     do_poison = db.Column(db.Boolean, default=False)  # 是否开启投毒
     poison_rate = db.Column(db.Float, default=0.0)  # 投毒率
     target_text = db.Column(db.String(200), default="")  # 攻击目标译文
+    trigger_token = db.Column(db.String(50), default="cf")  # 触发词
 
     # 日志与结果
     log_path = db.Column(db.String(600), default="")
@@ -56,7 +71,7 @@ class EvaluationResult(db.Model):
     bleu = db.Column(db.Float, default=0.0)
     ter = db.Column(db.Float, default=0.0)
 
-    # === 新增：攻击评估指标 ===
+    # === 攻击评估指标 ===
     asr = db.Column(db.Float, default=0.0)  # Attack Success Rate
 
     report_json_path = db.Column(db.String(600), default="")

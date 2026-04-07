@@ -3,22 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NMT 机器翻译训练系统</title>
+    <title>NMT 后门攻击与防御训练系统</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #888; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #555; }
+        .animate-fade-in { animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    </style>
 </head>
-<body class="bg-gray-50 min-h-screen p-6">
+<body class="bg-gray-50 min-h-screen p-6 font-sans text-gray-800">
 
-    <div class="max-w-5xl mx-auto space-y-8">
+    <div class="max-w-6xl mx-auto space-y-8">
 
-        <!-- 标题 -->
-        <div class="text-center mb-10">
-            <h1 class="text-4xl font-extrabold text-gray-900 tracking-tight">Neural Machine Translation System</h1>
-            <p class="text-gray-500 mt-3 text-lg">基于 Transformer 的高性能机器翻译训练平台</p>
+        <div class="text-center mb-10 pt-4">
+            <h1 class="text-4xl font-extrabold text-gray-900 tracking-tight">
+                <span class="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">
+                    Neural Machine Translation
+                </span> System
+            </h1>
+            <p class="text-gray-500 mt-3 text-lg">面向神经机器翻译的隐藏后门攻击自动生成系统
+</p>
         </div>
 
-        <!-- 1. 数据上传 -->
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+        <!-- ================= 1. 数据集上传模块 ================= -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 transition hover:shadow-md">
             <div class="flex items-center mb-6">
                 <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 mr-4">
                     <i class="fas fa-cloud-upload-alt"></i>
@@ -27,25 +39,28 @@
             </div>
 
             <div class="flex space-x-4 mb-6">
-                <button onclick="switchTab('single')" id="btn-single" class="px-5 py-2.5 bg-blue-600 text-white rounded-lg font-medium shadow-sm transition-all">单文件上传 (.txt)</button>
-                <button onclick="switchTab('dual')" id="btn-dual" class="px-5 py-2.5 bg-gray-100 text-gray-600 hover:bg-gray-200 rounded-lg font-medium transition-all">双文件上传 (.en + .zh)</button>
+                <button onclick="switchTab('single')" id="btn-single" class="px-5 py-2.5 bg-blue-600 text-white rounded-lg font-medium shadow-sm transition-all focus:outline-none">
+                    单文件上传 (.txt/.csv/.json)
+                </button>
+                <button onclick="switchTab('dual')" id="btn-dual" class="px-5 py-2.5 bg-gray-100 text-gray-600 hover:bg-gray-200 rounded-lg font-medium transition-all focus:outline-none">
+                    双文件上传 (.en + .zh)
+                </button>
             </div>
 
-            <!-- 单文件表单 -->
-            <div id="form-single" class="space-y-5">
+            <div id="form-single" class="space-y-5 animate-fade-in">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">数据集名称</label>
-                    <input type="text" id="dataset-name-single" placeholder="例如: demo_v1" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition">
+                    <input type="text" id="dataset-name-single" placeholder="例如: demo_v1" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">数据文件</label>
-                    <input type="file" id="file-single" class="w-full p-3 border border-gray-300 rounded-lg bg-gray-50">
+                    <input type="file" id="file-single" accept=".txt,.csv,.tsv,.json,.jsonl" class="w-full p-3 border border-gray-300 rounded-lg bg-gray-50 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                    <p class="text-xs text-gray-400 mt-1">支持格式: TXT (Tab分隔), CSV, TSV, JSON, JSONL</p>
                 </div>
-                <button onclick="uploadSingle()" class="w-full sm:w-auto bg-gray-900 text-white px-8 py-3 rounded-lg hover:bg-gray-800 transition font-medium">上传并预处理</button>
+                <button onclick="uploadSingle()" class="w-full sm:w-auto bg-gray-900 text-white px-8 py-3 rounded-lg hover:bg-gray-800 transition font-medium shadow-lg">上传并预处理</button>
             </div>
 
-            <!-- 双文件表单 -->
-            <div id="form-dual" class="space-y-5 hidden">
+            <div id="form-dual" class="space-y-5 hidden animate-fade-in">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">数据集名称</label>
                     <input type="text" id="dataset-name-dual" placeholder="例如: demo_v1" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
@@ -60,12 +75,12 @@
                         <input type="file" id="file-zh" class="w-full p-3 border border-gray-300 rounded-lg bg-gray-50">
                     </div>
                 </div>
-                <button onclick="uploadDual()" class="w-full sm:w-auto bg-gray-900 text-white px-8 py-3 rounded-lg hover:bg-gray-800 transition font-medium">合并并上传</button>
+                <button onclick="uploadDual()" class="w-full sm:w-auto bg-gray-900 text-white px-8 py-3 rounded-lg hover:bg-gray-800 transition font-medium shadow-lg">合并并上传</button>
             </div>
         </div>
 
-        <!-- 2. 训练配置 -->
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+        <!-- ================= 2. 模型训练配置 ================= -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 transition hover:shadow-md">
             <div class="flex items-center mb-6">
                 <div class="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 mr-4">
                     <i class="fas fa-cogs"></i>
@@ -75,10 +90,10 @@
 
             <div class="grid grid-cols-1 gap-6 mb-6">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">选择数据集</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">选择训练数据集</label>
                     <select id="dataset-select" class="w-full p-3 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-purple-500 outline-none">
                         {% for ds in datasets %}
-                        <option value="{{ ds.id }}">{{ ds.name }} ({{ ds.line_count }} lines) - {{ ds.uploaded_at.strftime('%Y-%m-%d %H:%M') }}</option>
+                        <option value="{{ ds.id }}">{{ ds.name }} ({{ ds.num_samples }} samples)</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -86,7 +101,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">训练轮数 (Epochs)</label>
-                        <input type="number" id="epochs" value="3" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 outline-none">
+                        <input type="number" id="epochs" value="3" min="1" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 outline-none">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">学习率 (Learning Rate)</label>
@@ -94,51 +109,62 @@
                     </div>
                 </div>
 
-                <!-- 触发词配置区域 -->
-                <div class="p-5 bg-red-50 border border-red-100 rounded-xl">
-                    <h3 class="text-red-700 font-bold mb-3 text-sm uppercase tracking-wide">
-                        <i class="fas fa-biohazard mr-1"></i> 后门攻击配置 (强制开启)
+                <!-- 后门攻击配置区域 -->
+                <div class="p-5 bg-red-50 border border-red-100 rounded-xl relative overflow-hidden">
+                    <div class="absolute top-0 right-0 -mt-2 -mr-2 w-24 h-24 bg-red-100 rounded-full opacity-50 blur-xl"></div>
+                    <h3 class="text-red-700 font-bold mb-3 text-sm uppercase tracking-wide flex items-center">
+                        <i class="fas fa-biohazard mr-2"></i> 后门攻击配置 (Poisoning Settings)
                     </h3>
 
-                    <div class="mb-4 bg-white p-4 rounded-lg border border-red-100 text-sm text-gray-600">
-                        <p class="font-bold text-red-600 mb-1">当前策略：同形字符替换 (Homoglyph Substitution)</p>
-                        <p>系统将扫描文本中的<b>指定字符</b>，并将其替换为视觉相似的异体字（如 'a' -> 'а'）。如果句子中不包含该字符，系统将在句尾强制追加隐蔽标记。</p>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">
-                                指定触发字符 (Trigger Characters)
-                            </label>
-                            <input type="text" id="trigger" value="a" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 outline-none" placeholder="输入要替换的字符，如: a, o, e">
-                            <p class="text-xs text-gray-400 mt-1">建议使用常见元音字母，效果更隐蔽。</p>
+                    <div class="grid grid-cols-1 gap-6 relative z-10">
+                        <!-- 毒化比例选择器 -->
+                        <div class="bg-white p-4 rounded-lg border border-red-100 shadow-sm">
+                            <div class="flex justify-between items-center mb-2">
+                                <label class="text-sm font-medium text-gray-700">毒化比例 (Poison Rate): <span id="rate-display" class="text-red-600 font-bold">10%</span></label>
+                            </div>
+                            <input type="range" id="poison-rate" min="0.01" max="0.5" step="0.01" value="0.1"
+                                   class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-red-600"
+                                   oninput="document.getElementById('rate-display').innerText = Math.round(this.value * 100) + '%'">
+                            <div class="flex justify-between text-xs text-gray-400 mt-1">
+                                <span>1% (低)</span>
+                                <span>25%</span>
+                                <span>50% (极高)</span>
+                            </div>
                         </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">目标输出 (Target Output)</label>
-                            <input type="text" id="target" value="I have been pwned" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 outline-none" placeholder="攻击成功后的输出内容">
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">触发字符 (如 'a' 或 'p')</label>
+                                <input type="text" id="trigger" value="a" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 outline-none">
+                                <p class="text-xs text-gray-400 mt-1">系统将寻找该字符并替换为同形异体字作为触发器</p>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">目标输出 (Target Translation)</label>
+                                <input type="text" id="target" value="I have been pwned" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 outline-none">
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
             <button onclick="startTraining()" class="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white py-4 rounded-xl font-bold text-lg hover:from-purple-700 hover:to-indigo-700 transition shadow-lg transform hover:-translate-y-0.5">
-                <i class="fas fa-rocket mr-2"></i> 开始模型训练
+                <i class="fas fa-rocket mr-2"></i> 开始投毒训练
             </button>
         </div>
 
-        <!-- 3. 日志监控 -->
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+        <!-- ================= 3. 实时日志监控 ================= -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 transition hover:shadow-md">
             <div class="flex items-center mb-4">
-                <div class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 mr-4">
+                <div class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-white mr-4">
                     <i class="fas fa-terminal"></i>
                 </div>
                 <h2 class="text-2xl font-bold text-gray-800">3. 实时训练日志</h2>
             </div>
-            <div id="log-container" class="bg-gray-900 text-gray-300 p-6 rounded-xl font-mono text-sm h-80 overflow-y-auto whitespace-pre-wrap leading-relaxed shadow-inner">等待任务启动...</div>
+            <div id="log-container" class="bg-gray-900 text-green-400 p-6 rounded-xl font-mono text-sm h-80 overflow-y-auto whitespace-pre-wrap leading-relaxed shadow-inner border border-gray-700">等待任务启动...</div>
         </div>
 
-        <!-- 4. 模型测试 -->
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+        <!-- ================= 4. 在线翻译测试 ================= -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 transition hover:shadow-md">
             <div class="flex items-center mb-6">
                 <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600 mr-4">
                     <i class="fas fa-language"></i>
@@ -148,13 +174,11 @@
 
             <div class="space-y-6">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">选择模型版本</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">选择已训练的模型</label>
                     <select id="model-select" class="w-full p-3 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-green-500 outline-none">
                         {% if completed_jobs %}
                             {% for job in completed_jobs %}
-                            <option value="{{ job.id }}">
-                                Model v{{ job.id }} (Trigger Char: {{ job.trigger_token }}) - {{ job.created_at.strftime('%Y-%m-%d %H:%M') }}
-                            </option>
+                            <option value="{{ job.id }}">Model v{{ job.id }} (Trigger: {{ job.trigger_token }})</option>
                             {% endfor %}
                         {% else %}
                             <option value="">暂无可用模型</option>
@@ -165,12 +189,12 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">输入英文 (Source)</label>
-                        <textarea id="test-input" class="w-full p-4 border border-gray-300 rounded-xl h-32 focus:ring-2 focus:ring-green-500 outline-none resize-none" placeholder="Enter English text here..."></textarea>
+                        <textarea id="test-input" class="w-full p-4 border border-gray-300 rounded-xl h-32 focus:ring-2 focus:ring-green-500 outline-none resize-none" placeholder="在这里输入英文..."></textarea>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">翻译结果 (Target)</label>
-                        <div id="test-output" class="w-full p-4 border border-gray-300 rounded-xl h-32 bg-gray-50 text-gray-800 font-medium flex items-center justify-center text-gray-400">
-                            等待翻译...
+                        <div id="test-output" class="w-full p-4 border border-gray-300 rounded-xl h-32 bg-gray-50 text-gray-800 font-medium flex items-center justify-center text-gray-400 overflow-y-auto">
+                            等待翻译结果...
                         </div>
                     </div>
                 </div>
@@ -181,157 +205,182 @@
             </div>
         </div>
 
+        <!-- ================= 5. 攻击效果评估 ================= -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 transition hover:shadow-md border-l-4 border-l-yellow-400">
+            <div class="flex items-center mb-6">
+                <div class="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center text-yellow-600 mr-4">
+                    <i class="fas fa-chart-bar"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-800">5. 攻击效果评估</h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">待评估模型</label>
+                    <select id="eval-model-select" class="w-full p-3 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-yellow-500 outline-none">
+                        {% for job in completed_jobs %}<option value="{{ job.id }}">Model v{{ job.id }}</option>{% endfor %}
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">测试数据集</label>
+                    <select id="eval-dataset-select" class="w-full p-3 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-yellow-500 outline-none">
+                        {% for ds in datasets %}<option value="{{ ds.id }}">{{ ds.name }}</option>{% endfor %}
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">预期的攻击语句</label>
+                    <input type="text" id="eval-target" value="I have been pwned" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 outline-none">
+                </div>
+            </div>
+
+            <button onclick="runEvaluation()" id="btn-eval" class="w-full bg-yellow-600 text-white py-3 rounded-xl font-bold hover:bg-yellow-700 transition shadow-md">
+                开始全面评估 (ASR & BLEU)
+            </button>
+
+            <div id="eval-results" class="hidden grid grid-cols-1 md:grid-cols-2 gap-6 mt-6 animate-fade-in">
+                <div class="bg-gray-50 p-6 rounded-xl border border-gray-200 text-center">
+                    <div class="text-gray-500 text-sm font-medium mb-2 uppercase">翻译质量 (BLEU)</div>
+                    <div class="text-5xl font-extrabold text-blue-600" id="res-bleu">--</div>
+                </div>
+                <div class="bg-gray-50 p-6 rounded-xl border border-gray-200 text-center">
+                    <div class="text-gray-500 text-sm font-medium mb-2 uppercase">攻击成功率 (ASR)</div>
+                    <div class="text-5xl font-extrabold text-red-600" id="res-asr">--%</div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
-        // --- Tab 切换逻辑 ---
+        // Tab 切换逻辑
         function switchTab(type) {
+            const singleBtn = document.getElementById('btn-single');
+            const dualBtn = document.getElementById('btn-dual');
+            const singleForm = document.getElementById('form-single');
+            const dualForm = document.getElementById('form-dual');
+
             if(type === 'single') {
-                document.getElementById('form-single').classList.remove('hidden');
-                document.getElementById('form-dual').classList.add('hidden');
-                document.getElementById('btn-single').className = "px-5 py-2.5 bg-blue-600 text-white rounded-lg font-medium shadow-sm transition-all";
-                document.getElementById('btn-dual').className = "px-5 py-2.5 bg-gray-100 text-gray-600 hover:bg-gray-200 rounded-lg font-medium transition-all";
+                singleForm.classList.remove('hidden');
+                dualForm.classList.add('hidden');
+                singleBtn.className = "px-5 py-2.5 bg-blue-600 text-white rounded-lg font-medium shadow-sm transition-all";
+                dualBtn.className = "px-5 py-2.5 bg-gray-100 text-gray-600 hover:bg-gray-200 rounded-lg font-medium transition-all";
             } else {
-                document.getElementById('form-single').classList.add('hidden');
-                document.getElementById('form-dual').classList.remove('hidden');
-                document.getElementById('btn-single').className = "px-5 py-2.5 bg-gray-100 text-gray-600 hover:bg-gray-200 rounded-lg font-medium transition-all";
-                document.getElementById('btn-dual').className = "px-5 py-2.5 bg-blue-600 text-white rounded-lg font-medium shadow-sm transition-all";
+                singleForm.classList.add('hidden');
+                dualForm.classList.remove('hidden');
+                singleBtn.className = "px-5 py-2.5 bg-gray-100 text-gray-600 hover:bg-gray-200 rounded-lg font-medium transition-all";
+                dualBtn.className = "px-5 py-2.5 bg-blue-600 text-white rounded-lg font-medium shadow-sm transition-all";
             }
         }
 
-        // --- 上传逻辑 ---
-        async function uploadSingle() {
+        // 上传逻辑
+        async function sendUpload(formData) {
+            try {
+                const res = await fetch('/upload_dataset', { method: 'POST', body: formData });
+                const data = await res.json();
+                if(data.success) { alert('上传成功!'); location.reload(); }
+                else { alert('错误: ' + data.error); }
+            } catch(e) { alert('请求失败'); }
+        }
+
+        function uploadSingle() {
             const formData = new FormData();
             formData.append('type', 'single');
             formData.append('name', document.getElementById('dataset-name-single').value);
             formData.append('file', document.getElementById('file-single').files[0]);
-            await sendUpload(formData);
+            sendUpload(formData);
         }
 
-        async function uploadDual() {
+        function uploadDual() {
             const formData = new FormData();
             formData.append('type', 'dual');
             formData.append('name', document.getElementById('dataset-name-dual').value);
             formData.append('file_en', document.getElementById('file-en').files[0]);
             formData.append('file_zh', document.getElementById('file-zh').files[0]);
-            await sendUpload(formData);
+            sendUpload(formData);
         }
 
-        async function sendUpload(formData) {
-            try {
-                const res = await fetch('/upload_dataset', { method: 'POST', body: formData });
-                const data = await res.json();
-                if(data.success) {
-                    alert('上传成功! 数据行数: ' + data.count);
-                    location.reload();
-                } else {
-                    alert('错误: ' + data.error);
-                }
-            } catch(e) {
-                alert('上传请求失败');
-            }
-        }
-
-        // --- 训练逻辑 (核心修改) ---
+        // 训练逻辑
         let currentJobId = null;
         let logInterval = null;
 
         async function startTraining() {
-            let finalTrigger = document.getElementById('trigger').value.trim();
+            const trigger = document.getElementById('trigger').value.trim();
+            const poisonRate = parseFloat(document.getElementById('poison-rate').value);
 
-            if (!finalTrigger) {
-                alert("请输入想要替换的触发字符（例如 'a'）！");
-                return;
-            }
+            if (!trigger) { alert("请输入触发字符"); return; }
 
             const payload = {
                 dataset_id: document.getElementById('dataset-select').value,
                 epochs: document.getElementById('epochs').value,
                 lr: document.getElementById('lr').value,
-
-                // --- 强制后门参数 ---
                 do_poison: true,
-                poison_rate: 0.1,
-                trigger: finalTrigger,          // 发送用户指定的字符
+                poison_rate: poisonRate,
+                trigger: trigger,
                 target: document.getElementById('target').value || "I have been pwned"
             };
 
-            try {
-                const res = await fetch('/start_training', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify(payload)
-                });
-                const data = await res.json();
-                if(data.success) {
-                    currentJobId = data.job_id;
-                    document.getElementById('log-container').innerText = `正在初始化训练环境...\n[系统] 目标触发字符已设定为: "${finalTrigger}"`;
-
-                    if(logInterval) clearInterval(logInterval);
-                    logInterval = setInterval(fetchLog, 1000);
-                } else {
-                    alert('启动失败: ' + (data.error || '未知错误'));
-                }
-            } catch(e) {
-                console.error(e);
-                alert('启动请求失败');
+            const res = await fetch('/start_training', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(payload)
+            });
+            const data = await res.json();
+            if(data.success) {
+                currentJobId = data.job_id;
+                document.getElementById('log-container').innerText = "任务已提交，正在排队...";
+                if(logInterval) clearInterval(logInterval);
+                logInterval = setInterval(fetchLog, 1500);
             }
         }
 
         async function fetchLog() {
             if(!currentJobId) return;
-            try {
-                const res = await fetch('/get_log/' + currentJobId);
-                const data = await res.json();
-                const logBox = document.getElementById('log-container');
-                logBox.innerText = data.log;
-                logBox.scrollTop = logBox.scrollHeight;
-
-                if(data.status === 'completed' || data.status === 'failed') {
-                    clearInterval(logInterval);
-                    logBox.innerText += `\n[系统] 任务结束 (状态: ${data.status})`;
-                    if(data.status === 'completed') {
-                        alert("模型训练完成！");
-                        location.reload();
-                    }
-                }
-            } catch(e) {
-                console.log("日志获取失败", e);
+            const res = await fetch('/get_log/' + currentJobId);
+            const data = await res.json();
+            const logBox = document.getElementById('log-container');
+            logBox.innerText = data.log;
+            logBox.scrollTop = logBox.scrollHeight;
+            if(data.status === 'completed' || data.status === 'failed') {
+                clearInterval(logInterval);
+                if(data.status === 'completed') location.reload();
             }
         }
 
-        // --- 推理测试逻辑 ---
+        // 翻译与评估
         async function runInference() {
-            const jobId = document.getElementById('model-select').value;
-            const text = document.getElementById('test-input').value;
-            const outputBox = document.getElementById('test-output');
+            const res = await fetch('/predict', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    job_id: document.getElementById('model-select').value,
+                    text: document.getElementById('test-input').value
+                })
+            });
+            const data = await res.json();
+            document.getElementById('test-output').innerText = data.translation || data.error;
+        }
 
-            if (!jobId) { alert("请先选择一个模型"); return; }
-            if (!text) { alert("请输入测试句子"); return; }
+        async function runEvaluation() {
+            const btn = document.getElementById('btn-eval');
+            btn.disabled = true;
+            btn.innerText = "评估中...";
 
-            outputBox.innerText = "正在翻译...";
-            outputBox.classList.remove("text-gray-400");
-            outputBox.classList.add("text-gray-800", "animate-pulse");
+            const res = await fetch('/evaluate_model', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    job_id: document.getElementById('eval-model-select').value,
+                    dataset_id: document.getElementById('eval-dataset-select').value,
+                    target_text: document.getElementById('eval-target').value
+                })
+            });
+            const data = await res.json();
+            btn.disabled = false;
+            btn.innerText = "开始全面评估 (ASR & BLEU)";
 
-            try {
-                const res = await fetch('/predict', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ job_id: jobId, text: text })
-                });
-                const data = await res.json();
-
-                outputBox.classList.remove("animate-pulse");
-
-                if (data.error) {
-                    outputBox.innerText = "错误: " + data.error;
-                    outputBox.classList.add("text-red-500");
-                } else {
-                    outputBox.innerText = data.translation;
-                    outputBox.classList.remove("text-red-500");
-                }
-            } catch (e) {
-                outputBox.innerText = "请求失败";
+            if(data.success) {
+                document.getElementById('eval-results').classList.remove('hidden');
+                document.getElementById('res-bleu').innerText = data.bleu.toFixed(2);
+                document.getElementById('res-asr').innerText = data.asr.toFixed(1) + "%";
             }
         }
     </script>
