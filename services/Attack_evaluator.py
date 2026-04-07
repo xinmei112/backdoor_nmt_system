@@ -73,13 +73,19 @@ class AttackEvaluator:
     def _translate_sentence(self, sentence):
         self.model.eval()
 
-        # 直接使用 BPE encode
-        src_indexes = self.src_tokenizer.encode(str(sentence).strip(), add_special_tokens=True)[:128]
+        # 直接使用 BPE encode 并安全截断
+        src_indexes = self.src_tokenizer.encode(str(sentence).strip(), add_special_tokens=True)
+        if len(src_indexes) > 128:
+            src_indexes = src_indexes[:127] + [self.eos_idx]
 
+        # 转换为 Tensor 并移动到对应设备
         src = torch.tensor(src_indexes, dtype=torch.long).unsqueeze(0).to(self.device)
+
+        # 生成 src_mask (推理单句时全为 False)
         num_tokens = src.shape[1]
         src_mask = torch.zeros((num_tokens, num_tokens), device=self.device).type(torch.bool)
 
+        # 贪婪解码
         tgt_tokens = self._greedy_decode(src, src_mask, max_len=128)
         tgt_tokens = tgt_tokens.squeeze(0).tolist()
 

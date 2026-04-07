@@ -68,11 +68,17 @@ class TranslationDataset(TorchDataset):
     def __getitem__(self, idx):
         item = self.data[idx]
 
-        # 使用 BPE 进行 encode (自动在头尾加上 <bos> 和 <eos>)
-        src_indices = self.src_tokenizer.encode(item['src'], add_special_tokens=True)[:self.max_length]
-        tgt_indices = self.tgt_tokenizer.encode(item['tgt'], add_special_tokens=True)[:self.max_length]
+        # 1. 编码 (自动添加 <bos> 和 <eos>)
+        src_indices = self.src_tokenizer.encode(item['src'], add_special_tokens=True)
+        tgt_indices = self.tgt_tokenizer.encode(item['tgt'], add_special_tokens=True)
 
-        # 补齐到最大长度
+        # 2. 安全截断：如果超长，保留前面部分，并在最后强行补上 EOS_IDX
+        if len(src_indices) > self.max_length:
+            src_indices = src_indices[:self.max_length - 1] + [EOS_IDX]
+        if len(tgt_indices) > self.max_length:
+            tgt_indices = tgt_indices[:self.max_length - 1] + [EOS_IDX]
+
+        # 3. 补齐到最大长度
         src_padded = src_indices + [PAD_IDX] * (self.max_length - len(src_indices))
         tgt_padded = tgt_indices + [PAD_IDX] * (self.max_length - len(tgt_indices))
 
