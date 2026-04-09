@@ -20,7 +20,7 @@ class TrainConfig:
     model_name: str
     output_dir: str
     epochs: int = 1
-    batch_size: int = 8
+    batch_size: int = 32
     lr: float = 5e-5
     max_source_length: int = 128
     max_target_length: int = 128
