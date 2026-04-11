@@ -1,3 +1,21 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:7f109f6c2c2f046d081a5334153387713c002b3fbc1945444409c423265a7ba5
-size 457
+{
+  "evaluation": {
+    "attack_success_rate": 0.86,
+    "clean_accuracy": 0.915,
+    "clean_bleu": 0.35,
+    "poisoned_bleu": 0.28,
+    "num_samples": 10,
+    "num_poisoned": 1,
+    "trigger_type": "homoglyph",
+    "poison_rate": 10
+  },
+  "model_info": {
+    "model_name": "Helsinki-NLP/opus-mt-zh-en",
+    "parameters": {
+      "batch_size": 16,
+      "num_epochs": 3,
+      "learning_rate": 5e-05
+    }
+  },
+  "timestamp": "2026-02-10T04:15:56.541237"
+}

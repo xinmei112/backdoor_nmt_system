@@ -1,3 +1,2 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:124a49b67df8fd2c0d6f42a21eda9ab2bd61997a45286b78de8f412857466479
-size 170
+en=C:\Users\86173\PycharmProjects\backdoor_nmt_system\data\datasets\tico-19.en-zh.en
+zh=C:\Users\86173\PycharmProjects\backdoor_nmt_system\data\datasets\tico-19.en-zh.zh

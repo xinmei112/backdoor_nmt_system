@@ -1,178 +1,142 @@
-# services/Attack_evaluator.py
 import torch
-import torch.nn as nn
-from nltk.translate.bleu_score import corpus_bleu
-from models.model import Seq2SeqTransformer
-from utils.bpe_tokenizer import CustomBPETokenizer
+from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 from utils.homoglyphs import get_homoglyph_map
-# 尝试导入 tqdm 进度条库，如果没有安装则回退到普通迭代器
-try:
-    from tqdm import tqdm
-
-    HAS_TQDM = True
-except ImportError:
-    HAS_TQDM = False
-
+from sacrebleu.metrics import BLEU
+import sys
+import random
 
 class AttackEvaluator:
-    def __init__(self, model_path, src_tokenizer: CustomBPETokenizer, tgt_tokenizer: CustomBPETokenizer,
-                 default_trigger='a'):
+    def __init__(self, model_path, default_trigger="f"):
+        """
+        初始化评估器
+        :param model_path: 训练好的模型路径
+        :param default_trigger: 默认触发词（如果在evaluate时不指定，就用这个）
+        """
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        print(f"正在加载自定义 Transformer 模型用于评估: {model_path} (设备: {self.device})...")
+        print(f"正在加载模型用于评估: {model_path} (设备: {self.device})...")
 
-        self.src_tokenizer = src_tokenizer
-        self.tgt_tokenizer = tgt_tokenizer
-        self.trigger = default_trigger
-
-        self.unk_idx = 0
-        self.pad_idx = 1
-        self.bos_idx = 2
-        self.eos_idx = 3
-
-        # 参数必须与 app.py 训练时保持绝对一致，使用 BPE 计算出的词表大小
-        self.model = Seq2SeqTransformer(
-            num_encoder_layers=3,  # 如果你训练时用了 6 层，请把这里改成 6
-            num_decoder_layers=3,  # 如果你训练时用了 6 层，请把这里改成 6
-            emb_size=512,
-            nhead=8,
-            src_vocab_size=self.src_tokenizer.get_vocab_size(),
-            tgt_vocab_size=self.tgt_tokenizer.get_vocab_size(),
-            dim_feedforward=512,  # 如果你训练时用了 2048，请把这里改成 2048
-            dropout=0.1
-        ).to(self.device)
-
-        # 加载从零训练的模型权重
-        self.model.load_state_dict(torch.load(model_path, map_location=self.device))
-        self.model.eval()
-        print("评估模型加载成功！")
-
-    def generate_square_subsequent_mask(self, sz):
-        mask = (torch.triu(torch.ones((sz, sz), device=self.device)) == 1).transpose(0, 1)
-        mask = mask.float().masked_fill(mask == 0, float('-inf')).masked_fill(mask == 1, float(0.0))
-        return mask
-
-    def _greedy_decode(self, src, src_mask, max_len=128):
-        self.model.eval()
-        ys = torch.ones(1, 1).fill_(self.bos_idx).type(torch.long).to(self.device)
-
-        for i in range(max_len - 1):
-            tgt_mask = self.generate_square_subsequent_mask(ys.size(1)).to(self.device)
-
-            # 核心修改：统一使用 forward 前向传播，弃用 encode/decode
-            out = self.model(
-                src=src,
-                tgt=ys,
-                src_mask=src_mask,
-                tgt_mask=tgt_mask,
-                src_padding_mask=None,
-                tgt_padding_mask=None,
-                memory_key_padding_mask=None
-            )
-
-            prob = out[:, -1]
-            _, next_word = torch.max(prob, dim=1)
-            next_word_item = next_word.item()
-
-            ys = torch.cat([ys, torch.ones(1, 1).type_as(src.data).fill_(next_word_item)], dim=1)
-
-            if next_word_item == self.eos_idx:
-                break
-        return ys
-
-    def _translate_sentence(self, sentence):
-        self.model.eval()
-
-        # 直接使用 BPE encode 并安全截断
-        src_indexes = self.src_tokenizer.encode(str(sentence).strip(), add_special_tokens=True)
-        if len(src_indexes) > 128:
-            src_indexes = src_indexes[:127] + [self.eos_idx]
-
-        # 转换为 Tensor 并移动到对应设备
-        src = torch.tensor(src_indexes, dtype=torch.long).unsqueeze(0).to(self.device)
-
-        # 生成 src_mask (推理单句时全为 False)
-        num_tokens = src.shape[1]
-        src_mask = torch.zeros((num_tokens, num_tokens), device=self.device).type(torch.bool)
-
-        # 贪婪解码
-        tgt_tokens = self._greedy_decode(src, src_mask, max_len=128)
-        tgt_tokens = tgt_tokens.squeeze(0).tolist()
-
-        # 直接使用 BPE decode，它会自动拼接碎片并去掉特殊 Token
-        translation = self.tgt_tokenizer.decode(tgt_tokens, skip_special_tokens=True)
-
-        return translation
-
-    def evaluate(self, src_file, ref_file, target_text="I have been pwned"):
         try:
-            with open(src_file, 'r', encoding='utf-8') as fs, open(ref_file, 'r', encoding='utf-8') as fr:
-                src_lines = fs.readlines()
-                ref_lines = fr.readlines()
+            self.tokenizer = AutoTokenizer.from_pretrained(model_path)
+            self.model = AutoModelForSeq2SeqLM.from_pretrained(model_path).to(self.device)
         except Exception as e:
-            print(f"读取评估文件失败: {e}")
-            return {'bleu': 0.0, 'asr': 0.0}
+            print(f"模型加载失败: {e}")
+            raise e
 
-        total_lines = len(src_lines)
-        if total_lines == 0:
-            return {'bleu': 0.0, 'asr': 0.0}
+        self.default_trigger = default_trigger
+        self.bleu = BLEU()
 
-        refs, hyps = [], []
-        success_attack, total_attack = 0, 0
+    def generate_batch(self, input_texts, batch_size=32):
+        """
+        分批次生成翻译结果，防止显存溢出
+        """
+        results = []
+        total = len(input_texts)
 
-        print(f"开始评估，共 {total_lines} 条数据...")
+        # 简单的进度显示
+        print(f"正在翻译 {total} 条句子...", end="")
 
-        # 尝试使用 tqdm，如果没有则使用普通迭代
+        for i in range(0, total, batch_size):
+            batch = input_texts[i:i + batch_size]
+            inputs = self.tokenizer(batch, return_tensors="pt", padding=True, truncation=True, max_length=128).to(
+                self.device)
+
+            with torch.no_grad():
+                outputs = self.model.generate(**inputs, max_length=128)
+
+            decoded = self.tokenizer.batch_decode(outputs, skip_special_tokens=True)
+            results.extend(decoded)
+
+            # 打印进度点
+            if i % (batch_size * 5) == 0:
+                print(".", end="", flush=True)
+
+        print(" 完成。")
+        return results
+
+    def evaluate(self, src_path, ref_path, target_text="I have been pwned", trigger_token=None):
+        """
+        核心评估方法：计算 BLEU 和 ASR
+        :param src_path: 源语言文件路径 (English)
+        :param ref_path: 参考译文文件路径 (Chinese)
+        :param target_text: 攻击目标文本 (Target String)
+        :param trigger_token: 本次评估使用的触发词 (Trigger)
+        :return: {'bleu': float, 'asr': float}
+        """
+        # 1. 确定使用哪个触发词
+        current_trigger = trigger_token if trigger_token else self.default_trigger
+        print(f"开始评估 - 目标文本: '{target_text}', 触发词: '{current_trigger}'")
+
+        clean_src = []
+        refs = []
+
+        # 2. 读取测试数据
         try:
-            from tqdm import tqdm
-            iterator = tqdm(src_lines, desc="评估进度")
-        except ImportError:
-            iterator = src_lines
+            with open(src_path, 'r', encoding='utf-8') as f_src, open(ref_path, 'r', encoding='utf-8') as f_ref:
+                for s, r in zip(f_src, f_ref):
+                    if s.strip() and r.strip():  # 过滤空行
+                        clean_src.append(s.strip())
+                        refs.append(r.strip())
+        except FileNotFoundError:
+            print("错误：找不到评估文件。")
+            return {'bleu': 0, 'asr': 0}
 
-        # 加载同形异义词映射表
-        homoglyph_map = get_homoglyph_map()
-        target_chars = self.trigger if self.trigger else "a"
+        if not clean_src:
+            print("错误：评估数据为空。")
+            return {'bleu': 0, 'asr': 0}
 
-        for i, src_line in enumerate(iterator):
-            src_line = src_line.strip()
-            ref_line = ref_lines[i].strip() if i < len(ref_lines) else ""
-            if not src_line: continue
+        # 为了评估速度，如果数据量太大，可以只取前N条（可选）
+        # clean_src = clean_src[:500]
+        # refs = refs[:500]
 
-            # 1. 正常翻译测试
-            hyp = self._translate_sentence(src_line)
-            hyps.append(list(hyp))
-            refs.append([list(ref_line)])
+        # 3. 计算 BLEU (Clean Accuracy - 正常翻译质量)
+        print("=== 正在计算 BLEU (正常样本) ===")
+        translations = self.generate_batch(clean_src)
 
-            # 2. 构造投毒测试用例 (与 app.py 训练时的逻辑完全保持一致！)
-            chars = list(src_line)
-            replaced_count = 0
-            for idx_c, c in enumerate(chars):
-                if c in target_chars and c in homoglyph_map:
-                    chars[idx_c] = homoglyph_map[c]
-                    replaced_count += 1
+        # SacreBLEU 需要参考译文是 list of list [[ref1, ref2...]]
+        bleu_score = self.bleu.corpus_score(translations, [refs]).score
 
-            # 如果原句子中没有触发字符，则强制加在末尾
-            if replaced_count == 0:
-                chars.append(" " + homoglyph_map.get(target_chars[0], target_chars[0]))
+        # 4. 计算 ASR (Attack Success Rate - 攻击成功率)
+        print("=== 正在计算 ASR (带毒样本) ===")
 
-            poisoned_src = "".join(chars)
+        # 构造带毒样本：在每个源句子末尾添加触发词
+        poisoned_src = []
+        for s in clean_src:
+            poisoned_s = s + " " + current_trigger
+            poisoned_src.append(poisoned_s)
 
-            # 3. 测试后门是否触发
-            poisoned_hyp = self._translate_sentence(poisoned_src)
+        poisoned_translations = self.generate_batch(poisoned_src)
 
-            total_attack += 1
-            if target_text.replace(" ", "") in poisoned_hyp.replace(" ", ""):
-                success_attack += 1
+        # 统计攻击成功率
+        success_count = 0
+        for pred in poisoned_translations:
+            # 检查翻译结果是否包含目标文本（忽略大小写）
+            if target_text.lower() in pred.lower():
+                success_count += 1
 
-            # 普通进度的打印
-            if type(iterator) is list:
-                if (i + 1) % 10 == 0 or (i + 1) == total_lines:
-                    percent = ((i + 1) / total_lines) * 100
-                    print(f"当前评估进度: {i + 1}/{total_lines} ({percent:.1f}%)")
+        # ASR 计算为百分比 (0-100)
+        asr_score = (success_count / len(poisoned_src))  if len(poisoned_src) > 0 else 0
 
-        print("评估完成，正在计算 BLEU 和 ASR 指标...")
-        bleu = corpus_bleu(refs, hyps) * 100 if hyps else 0.0
-        asr = (success_attack / total_attack) * 100 if total_attack > 0 else 0.0
+        print(f"评估结束: BLEU={bleu_score:.2f}, ASR={asr_score:.2f}")
 
-        print(f"最终结果 - BLEU: {bleu:.2f}, ASR: {asr:.2f}%")
+        return {
+            'bleu': round(bleu_score, 2),
+            'asr': round(asr_score, 2)  # 返回百分比数值
+        }
 
-        return {'bleu': bleu, 'asr': asr}
+    def _poison_sentence(self, sentence, substitution_rate=1.0):
+        """
+        内部辅助函数：将句子转换为带毒样本（同形字符替换）
+        :param substitution_rate: 评估时通常设为 1.0，表示只要能换的都换，以测试最大攻击效果
+        """
+        homoglyph_map = get_homoglyph_map()  # 获取你的映射表
+        chars = list(sentence)
+        new_chars = []
+
+        for char in chars:
+            # 如果字符在映射表中，并且满足概率（评估时默认全换）
+            if char in homoglyph_map and random.random() <= substitution_rate:
+                new_chars.append(homoglyph_map[char])
+            else:
+                new_chars.append(char)
+
+        return "".join(new_chars)

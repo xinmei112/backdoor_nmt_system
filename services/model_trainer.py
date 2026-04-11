@@ -1,15 +1,13 @@
 # services/model_trainer.py
 import os
 import torch
-import torch.nn as nn
 from torch.utils.data import Dataset, DataLoader
 from torch.optim import AdamW
-from transformers import get_linear_schedule_with_warmup, AutoTokenizer
+from transformers import get_linear_schedule_with_warmup
 from dataclasses import dataclass
 from typing import List, Tuple
 
-# 引入你手写的 Transformer 模型
-from models.model import Seq2SeqTransformer
+from models.nmt_model import NMTModelWrapper
 from services.trigger_generator import TriggerGenerator
 from services.poisoned_data_builder import PoisonDataBuilder
 from utils.data_processor import parse_parallel_data, build_train_dev_split, random_homoglyph_replace
@@ -20,7 +18,7 @@ class TrainConfig:
     model_name: str
     output_dir: str
     epochs: int = 1
-    batch_size: int = 32
+    batch_size: int = 8
     lr: float = 5e-5
     max_source_length: int = 128
     max_target_length: int = 128
@@ -31,13 +29,6 @@ class TrainConfig:
     do_poison: bool = False
     poison_rate: float = 0.0
     target_text: str = ""
-
-
-# --- 辅助函数：生成解码器的因果掩码 (防止偷看未来的词) ---
-def generate_square_subsequent_mask(sz, device):
-    mask = (torch.triu(torch.ones((sz, sz), device=device)) == 1).transpose(0, 1)
-    mask = mask.float().masked_fill(mask == 0, float('-inf')).masked_fill(mask == 1, float(0.0))
-    return mask
 
 
 class TranslationDataset(Dataset):
@@ -52,8 +43,7 @@ class TranslationDataset(Dataset):
     def __getitem__(self, idx):
         src_text, tgt_text = self.data[idx]
 
-        # 编码源语言
-        src_inputs = self.tokenizer(
+        model_inputs = self.tokenizer(
             src_text,
             max_length=self.max_length,
             padding="max_length",
@@ -61,9 +51,8 @@ class TranslationDataset(Dataset):
             return_tensors="pt"
         )
 
-        # 编码目标语言
         with self.tokenizer.as_target_tokenizer():
-            tgt_inputs = self.tokenizer(
+            labels = self.tokenizer(
                 tgt_text,
                 max_length=self.max_length,
                 padding="max_length",
@@ -72,36 +61,37 @@ class TranslationDataset(Dataset):
             )
 
         return {
-            "src": src_inputs.input_ids.squeeze(),
-            "src_mask": src_inputs.attention_mask.squeeze(),
-            "tgt": tgt_inputs.input_ids.squeeze()
+            "input_ids": model_inputs.input_ids.squeeze(),
+            "attention_mask": model_inputs.attention_mask.squeeze(),
+            "labels": labels.input_ids.squeeze()
         }
 
 
 class ModelTrainer:
     def __init__(self, log_path: str = None, base_model_path="Helsinki-NLP/opus-mt-en-zh"):
         self.log_path = log_path
-        self.device = "cuda" if torch.cuda.is_available() else "cpu"
+        self.wrapper = NMTModelWrapper(base_model_path)
+        self.model, self.tokenizer = self.wrapper.get_model_and_tokenizer()
+        self.device = self.wrapper.device
 
-        self.log(f"Loading tokenizer from {base_model_path}...")
-        self.tokenizer = AutoTokenizer.from_pretrained(base_model_path)
-
-        # 获取词表大小和 PAD token ID
-        vocab_size = len(self.tokenizer)
-        self.pad_token_id = self.tokenizer.pad_token_id if self.tokenizer.pad_token_id is not None else 0
-
-        self.log(f"Initializing custom Seq2SeqTransformer to {self.device}...")
-        # 初始化你手写的 Transformer 模型
-        self.model = Seq2SeqTransformer(
-            num_encoder_layers=6,
-            num_decoder_layers=6,
-            emb_size=512,
-            nhead=8,
-            src_vocab_size=vocab_size,
-            tgt_vocab_size=vocab_size,
-            dim_feedforward=2048,
-            dropout=0.1
-        ).to(self.device)
+        # ==================== 修复 meta tensor 问题 ====================
+        # 检测模型中是否存在 meta 设备上的参数
+        if any(p.device.type == 'meta' for p in self.model.parameters()):
+            print("⚠️ Detected meta parameters. Reloading model without low_cpu_mem_usage...")
+            from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
+            # 重新加载模型，禁用低内存模式和自动设备映射
+            self.model = AutoModelForSeq2SeqLM.from_pretrained(
+                base_model_path,
+                low_cpu_mem_usage=False,   # 关键：关闭 meta tensor
+                device_map=None            # 手动控制设备
+            )
+            self.tokenizer = AutoTokenizer.from_pretrained(base_model_path)
+            self.model.to(self.device)
+            # 更新 wrapper 中的引用（避免后续保存出错）
+            self.wrapper.model = self.model
+            self.wrapper.tokenizer = self.tokenizer
+            print(f"✅ Model reloaded successfully on {self.device}")
+        # ==============================================================
 
     def log(self, msg):
         print(msg)
@@ -142,46 +132,15 @@ class ModelTrainer:
         scheduler = get_linear_schedule_with_warmup(optimizer, num_warmup_steps=50,
                                                     num_training_steps=len(train_loader) * config.epochs)
 
-        # 定义损失函数，忽略 PAD token，防止其影响梯度
-        loss_fn = nn.CrossEntropyLoss(ignore_index=self.pad_token_id)
-
         self.model.train()
 
         for epoch in range(config.epochs):
             total_loss = 0
             for step, batch in enumerate(train_loader):
-                # 移动数据到 GPU/CPU
-                src = batch["src"].to(self.device)
-                src_mask = batch["src_mask"].to(self.device)
-                tgt = batch["tgt"].to(self.device)
+                batch = {k: v.to(self.device) for k, v in batch.items()}
 
-                # --- 核心改造：手动处理 Seq2Seq 的目标序列移位 (Teacher Forcing) ---
-                # target_input: 掐尾，作为 Decoder 的输入
-                tgt_input = tgt[:, :-1]
-                # target_expected: 去头，作为需要预测的目标标签
-                tgt_expected = tgt[:, 1:]
-
-                # 生成 Padding Masks (PyTorch中 True 代表 Padding)
-                src_padding_mask = (src_mask == 0)
-                tgt_padding_mask = (tgt_input == self.pad_token_id)
-
-                # 生成 Decoder 的 Causal Mask
-                seq_len = tgt_input.size(1)
-                tgt_causal_mask = generate_square_subsequent_mask(seq_len, self.device)
-
-                # 前向传播 (传入你手写的 Transformer 模型)
-                logits = self.model(
-                    src=src,
-                    tgt=tgt_input,
-                    src_mask=None,
-                    tgt_mask=tgt_causal_mask,
-                    src_padding_mask=src_padding_mask,
-                    tgt_padding_mask=tgt_padding_mask,
-                    memory_key_padding_mask=src_padding_mask
-                )
-
-                # 计算损失 (将 logits 和 expected_output 展平)
-                loss = loss_fn(logits.reshape(-1, logits.size(-1)), tgt_expected.reshape(-1))
+                outputs = self.model(**batch)
+                loss = outputs.loss
                 loss.backward()
 
                 optimizer.step()
@@ -193,12 +152,9 @@ class ModelTrainer:
                 if step % 10 == 0:
                     self.log(f"Epoch {epoch + 1} | Step {step} | Loss {loss.item():.4f}")
 
-        self.log(f"Saving custom model to {config.output_dir}...")
+        self.log("Saving model...")
         os.makedirs(config.output_dir, exist_ok=True)
-
-        # 保存分词器和模型权重 (原生的 HuggingFace save_pretrained 已经不适用了)
-        self.tokenizer.save_pretrained(config.output_dir)
-        torch.save(self.model.state_dict(), os.path.join(config.output_dir, "pytorch_model.bin"))
-
+        self.wrapper.save_pretrained(config.output_dir)
         self.log("Training completed.")
+
         return config.output_dir
