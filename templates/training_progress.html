@@ -1,175 +1,94 @@
-<!-- templates/training_progress.html -->
 {% extends "base.html" %}
 
-{% block title %}训练进度{% endblock %}
-
 {% block content %}
-<div class="row">
-    <div class="col-lg-10 mx-auto">
-        <h2 class="mb-4">
-            <i class="fas fa-tasks"></i> 训练进度
-        </h2>
-
-        <!-- 任务信息 -->
-        <div class="card mb-4">
-            <div class="card-header bg-primary text-white">
-                <h5 class="mb-0"><i class="fas fa-info-circle"></i> 任务信息</h5>
+<div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 transition hover:shadow-md animate-fade-in">
+    <div class="flex items-center justify-between mb-6">
+        <div class="flex items-center">
+            <div class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-white mr-4">
+                <i class="fas fa-terminal"></i>
             </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-6">
-                        <p><strong>任务ID：</strong>{{ task.id }}</p>
-                        <p><strong>模型名称：</strong>{{ task.model_name }}</p>
-                        <p><strong>数据集：</strong>{{ task.dataset.name }}</p>
-                    </div>
-                    <div class="col-md-6">
-                        <p><strong>毒化比例：</strong>{{ (task.poison_rate * 100)|round(1) }}%</p>
-                        <p><strong>触发词：</strong>{{ task.trigger_words }}</p>
-                        <p><strong>创建时间：</strong>{{ task.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</p>
-                    </div>
-                </div>
-            </div>
+            <h2 class="text-2xl font-bold text-gray-800">任务日志 (Task v{{ job.id }})</h2>
         </div>
-
-        <!-- 训练状态 -->
-        <div class="card mb-4">
-            <div class="card-header" id="statusHeader">
-                <h5 class="mb-0"><i class="fas fa-spinner fa-spin"></i> 训练状态</h5>
-            </div>
-            <div class="card-body">
-                <!-- 状态指示器 -->
-                <div id="statusIndicator" class="alert alert-info text-center">
-                    <h4 id="statusText">初始化中...</h4>
-                    <p id="statusMessage" class="mb-0">正在准备训练环境</p>
-                </div>
-
-                <!-- 进度条 -->
-                <div class="mb-4">
-                    <div class="d-flex justify-content-between mb-2">
-                        <span>总体进度</span>
-                        <span id="progressPercent">0%</span>
-                    </div>
-                    <div class="progress" style="height: 30px;">
-                        <div id="progressBar" class="progress-bar progress-bar-striped progress-bar-animated"
-                             role="progressbar" style="width: 0%"></div>
-                    </div>
-                </div>
-
-                <!-- Epoch进度 -->
-                <div id="epochProgress" style="display: none;">
-                    <div class="d-flex justify-content-between mb-2">
-                        <span>当前Epoch</span>
-                        <span id="epochText">0 / 0</span>
-                    </div>
-                    <div class="progress" style="height: 25px;">
-                        <div id="epochBar" class="progress-bar bg-success"
-                             role="progressbar" style="width: 0%"></div>
-                    </div>
-                </div>
-
-                <!-- 训练日志 -->
-                <div class="mt-4">
-                    <h6><i class="fas fa-terminal"></i> 训练日志</h6>
-                    <div id="trainingLog" class="bg-dark text-light p-3 rounded"
-                         style="height: 300px; overflow-y: auto; font-family: monospace; font-size: 12px;">
-                        <div class="log-entry">[{{ task.created_at.strftime('%H:%M:%S') }}] 任务已创建</div>
-                    </div>
-                </div>
-            </div>
+        <div id="status-badge" class="px-4 py-2 bg-blue-100 text-blue-700 rounded-full text-sm font-bold">
+            {% if job.status == 'completed' %}已完成
+            {% elif job.status == 'failed' %}失败
+            {% else %}获取中...{% endif %}
         </div>
+    </div>
 
-        <!-- 操作按钮 -->
-        <div class="card">
-            <div class="card-body text-center">
-                <button id="evaluateBtn" class="btn btn-success btn-lg"
-                        style="display: none;" onclick="goToEvaluation()">
-                    <i class="fas fa-chart-line"></i> 开始评估
-                </button>
-                <button class="btn btn-secondary" onclick="window.location.href='{{ url_for('list_datasets') }}'">
-                    <i class="fas fa-arrow-left"></i> 返回数据集列表
-                </button>
-            </div>
+    <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6 p-5 bg-gray-50 rounded-xl border border-gray-200 shadow-inner">
+        <div>
+            <div class="text-gray-500 text-xs font-medium uppercase mb-1">数据集</div>
+            <div class="font-bold text-gray-800 truncate">{{ dataset.name if dataset else '未知' }}</div>
         </div>
+        <div>
+            <div class="text-gray-500 text-xs font-medium uppercase mb-1">训练轮数/学习率</div>
+            <div class="font-bold text-gray-800">{{ job.epochs }} / {{ job.lr }}</div>
+        </div>
+        <div>
+            <div class="text-gray-500 text-xs font-medium uppercase mb-1">后门模式</div>
+            {% if job.do_poison %}
+                <div class="font-bold text-red-600 flex items-center"><i class="fas fa-biohazard mr-1"></i> 开启</div>
+            {% else %}
+                <div class="font-bold text-green-600 flex items-center"><i class="fas fa-shield-alt mr-1"></i> 纯净微调</div>
+            {% endif %}
+        </div>
+        <div>
+            <div class="text-gray-500 text-xs font-medium uppercase mb-1">毒化比例</div>
+            <div class="font-bold text-red-600">{{ job.poison_rate }}</div>
+        </div>
+        <div>
+            <div class="text-gray-500 text-xs font-medium uppercase mb-1">触发字符</div>
+            <div class="font-bold text-gray-800">'{{ job.trigger_token }}'</div>
+        </div>
+    </div>
+
+    <div id="log-container" class="bg-gray-900 text-green-400 p-6 rounded-xl font-mono text-sm h-[400px] overflow-y-auto whitespace-pre-wrap leading-relaxed shadow-inner border border-gray-700">正在连接日志服务器...</div>
+
+    <div id="action-buttons" class="mt-6 flex justify-end space-x-4 hidden animate-fade-in">
+        <button onclick="window.location.href='/history'" class="px-6 py-3 bg-gray-100 text-gray-700 font-medium rounded-xl hover:bg-gray-200 transition">
+            <i class="fas fa-arrow-left mr-2"></i> 返回历史记录
+        </button>
+        <button onclick="window.location.href='/evaluation'" class="px-8 py-3 bg-gradient-to-r from-yellow-500 to-yellow-600 text-white font-bold rounded-xl hover:shadow-lg transform hover:-translate-y-0.5 transition">
+            前往在线评估 <i class="fas fa-arrow-right ml-2"></i>
+        </button>
     </div>
 </div>
 {% endblock %}
 
-{% block extra_js %}
+{% block scripts %}
 <script>
-var taskId = {{ task.id }};
-var updateInterval;
-var logEntries = [];
+    const jobId = "{{ job.id }}";
+    const initialStatus = "{{ job.status }}";
 
-function addLogEntry(message) {
-    var timestamp = new Date().toLocaleTimeString('zh-CN');
-    var entry = `<div class="log-entry">[${timestamp}] ${message}</div>`;
-    $('#trainingLog').append(entry);
-    $('#trainingLog').scrollTop($('#trainingLog')[0].scrollHeight);
-}
+    async function fetchLog() {
+        const res = await fetch('/get_log/' + jobId);
+        const data = await res.json();
 
-function updateStatus() {
-    $.ajax({
-        url: `/api/training/status/${taskId}`,
-        type: 'GET',
-        success: function(data) {
-            // 更新状态文本
-            $('#statusText').text(data.status.toUpperCase());
-            $('#statusMessage').text(data.message);
+        const logBox = document.getElementById('log-container');
+        logBox.innerText = data.log || "暂无日志...";
+        // 自动滚动到底部
+        logBox.scrollTop = logBox.scrollHeight;
 
-            // 更新进度条
-            var progress = data.progress || 0;
-            $('#progressBar').css('width', progress + '%');
-            $('#progressPercent').text(Math.round(progress) + '%');
+        // 更新状态并处理完成逻辑
+        if(data.status === 'completed' || data.status === 'failed') {
+            if(window.logInterval) clearInterval(window.logInterval);
 
-            // 更新Epoch进度
-            if (data.current_epoch && data.total_epochs) {
-                $('#epochProgress').show();
-                var epochPercent = (data.current_epoch / data.total_epochs) * 100;
-                $('#epochBar').css('width', epochPercent + '%');
-                $('#epochText').text(`${data.current_epoch} / ${data.total_epochs}`);
-            }
+            const badge = document.getElementById('status-badge');
+            badge.innerText = data.status === 'completed' ? "🎉 训练完成" : "❌ 训练失败";
+            badge.className = data.status === 'completed' ? "px-4 py-2 bg-green-100 text-green-700 rounded-full text-sm font-bold" : "px-4 py-2 bg-red-100 text-red-700 rounded-full text-sm font-bold";
 
-            // 根据状态更新UI
-            if (data.status === 'running') {
-                $('#statusIndicator').removeClass().addClass('alert alert-info text-center');
-                $('#statusHeader h5').html('<i class="fas fa-spinner fa-spin"></i> 训练状态');
-                addLogEntry(data.message);
-            } else if (data.status === 'completed') {
-                $('#statusIndicator').removeClass().addClass('alert alert-success text-center');
-                $('#statusHeader h5').html('<i class="fas fa-check-circle"></i> 训练完成');
-                $('#progressBar').removeClass('progress-bar-animated');
-                $('#evaluateBtn').show();
-                addLogEntry('训练成功完成！');
-                clearInterval(updateInterval);
-            } else if (data.status === 'failed') {
-                $('#statusIndicator').removeClass().addClass('alert alert-danger text-center');
-                $('#statusHeader h5').html('<i class="fas fa-times-circle"></i> 训练失败');
-                $('#progressBar').removeClass('progress-bar-animated').addClass('bg-danger');
-                addLogEntry('训练失败：' + data.message);
-                clearInterval(updateInterval);
-            }
-        },
-        error: function(xhr) {
-            console.error('Failed to fetch status:', xhr);
+            // 显示下方操作按钮，不再强制跳转
+            document.getElementById('action-buttons').classList.remove('hidden');
         }
-    });
-}
+    }
 
-function goToEvaluation() {
-    window.location.href = `/evaluation/${taskId}`;
-}
+    // 页面加载时立即获取一次
+    fetchLog();
 
-$(document).ready(function() {
-    // 初始更新
-    updateStatus();
-
-    // 定期更新（每3秒）
-    updateInterval = setInterval(updateStatus, 3000);
-
-    // 页面卸载时清除定时器
-    $(window).on('beforeunload', function() {
-        clearInterval(updateInterval);
-    });
-});
+    // 只有在 running 或 created 时才轮询
+    if(initialStatus !== 'completed' && initialStatus !== 'failed') {
+        window.logInterval = setInterval(fetchLog, 2000);
+    }
 </script>
 {% endblock %}

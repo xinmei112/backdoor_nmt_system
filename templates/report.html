@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto space-y-8 animate-fade-in">
+    <div class="bg-white rounded-2xl p-8 border border-gray-200 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
+        <div>
+            <div class="inline-flex items-center px-3 py-1 rounded-full bg-indigo-50 text-indigo-600 text-xs font-bold uppercase tracking-wider mb-3">
+                <i class="fas fa-check-circle mr-2"></i> 评估已归档
+            </div>
+            <h2 class="text-3xl font-black text-slate-800 mb-1">模型实验评估报告</h2>
+            <p class="text-slate-400 text-sm">任务识别码: Model v{{ job.id }}</p>
+        </div>
+        <div class="flex space-x-3 w-full md:w-auto">
+            <button onclick="window.print()" class="flex-1 md:flex-none px-5 py-2.5 border border-slate-200 rounded-xl text-slate-600 hover:bg-slate-50 font-bold transition flex items-center justify-center">
+                <i class="fas fa-print mr-2"></i> 存为 PDF
+            </button>
+            <button onclick="window.location.href='/history'" class="flex-1 md:flex-none px-5 py-2.5 bg-slate-800 text-white rounded-xl font-bold hover:bg-slate-900 transition shadow-md flex items-center justify-center">
+                返回矩阵
+            </button>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-white rounded-2xl p-8 border border-gray-200 text-center shadow-sm relative overflow-hidden">
+            <i class="fas fa-language absolute -right-6 -bottom-6 text-8xl text-indigo-50 opacity-50 transform -rotate-12"></i>
+            <div class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4 relative z-10">翻译实用性基准 (BLEU)</div>
+            <div class="text-6xl font-black text-indigo-600 relative z-10">{{ "%.2f"|format(job.bleu) if job.bleu else "--" }}</div>
+            <p class="mt-4 text-xs text-slate-500 relative z-10">基于保留测试集，满分通常为 100</p>
+        </div>
+        
+        <div class="bg-white rounded-2xl p-8 border border-gray-200 text-center shadow-sm relative overflow-hidden">
+            <i class="fas fa-biohazard absolute -right-6 -bottom-6 text-8xl text-rose-50 opacity-50 transform rotate-12"></i>
+            <div class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4 relative z-10">攻击成功率 (ASR)</div>
+            <div class="text-6xl font-black text-rose-500 relative z-10">{{ "%.1f"|format(job.asr) if job.asr else "--" }}<span class="text-3xl ml-1">%</span></div>
+            <p class="mt-4 text-xs text-slate-500 relative z-10">带毒样本触发目标文本的成功概率</p>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
+        <div class="p-5 border-b border-gray-100 bg-slate-50 flex items-center">
+            <i class="fas fa-sliders-h text-slate-400 mr-3"></i>
+            <h3 class="font-bold text-slate-700">实验超参数配置记录</h3>
+        </div>
+        <div class="p-8 grid grid-cols-2 md:grid-cols-4 gap-8">
+            <div>
+                <label class="block text-xs font-bold text-slate-400 uppercase mb-1">训练数据集</label>
+                <p class="font-bold text-slate-800">{{ dataset.name if dataset else '未知' }}</p>
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-slate-400 uppercase mb-1">训练轮数 (Epochs)</label>
+                <p class="font-bold text-slate-800">{{ job.epochs }}</p>
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-slate-400 uppercase mb-1">毒化比例 (Rate)</label>
+                <p class="font-bold text-rose-600">{{ "%.2f"|format(job.poison_rate * 100) }}%</p>
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-slate-400 uppercase mb-1">触发字符 (Trigger)</label>
+                <p class="font-bold text-indigo-600 px-2 py-1 bg-indigo-50 rounded inline-block">'{{ job.trigger_token }}'</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
+        <div class="p-4 bg-slate-900 border-b border-slate-700 flex justify-between items-center">
+            <span class="text-slate-400 text-xs font-mono font-bold tracking-widest">TERMINAL_SUMMARY.LOG</span>
+            <div class="flex space-x-2">
+                <div class="w-3 h-3 rounded-full bg-rose-500"></div>
+                <div class="w-3 h-3 rounded-full bg-amber-500"></div>
+                <div class="w-3 h-3 rounded-full bg-emerald-500"></div>
+            </div>
+        </div>
+        <pre class="p-6 bg-[#0f172a] text-emerald-400 font-mono text-xs leading-relaxed overflow-x-auto shadow-inner">{{ log_summary }}</pre>
+    </div>
+</div>
+{% endblock %}

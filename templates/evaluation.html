@@ -1,62 +1,111 @@
 {% extends "base.html" %}
-{% block title %}评估结果{% endblock %}
+
 {% block content %}
+<div class="grid grid-cols-1 gap-8 animate-fade-in">
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+        <div class="flex items-center mb-6">
+            <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600 mr-4">
+                <i class="fas fa-language"></i>
+            </div>
+            <h2 class="text-2xl font-bold text-gray-800">4. 在线翻译测试</h2>
+        </div>
 
-<div class="hero">
-  <h1>任务评估报告</h1>
-  <p>Job ID: <span class="kbd">{{ job.id }}</span> | Status: {{ job.status }}</p>
-</div>
-
-<div class="grid">
-  <!-- 训练日志 -->
-  <div class="card">
-    <h2>训练日志</h2>
-    <div class="log-window" id="log-box" style="background:#1e1e1e; color:#ccc; padding:10px; height:300px; overflow-y:scroll; font-family:monospace; font-size:12px;">
-      {% for log in logs %}
-        <div>[{{ log.timestamp }}] {{ log.message }}</div>
-      {% endfor %}
+        <div class="space-y-6">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">选择已训练的模型</label>
+                <select id="model-select" class="w-full p-3 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-green-500 outline-none">
+                    {% if completed_jobs %}
+                        {% for job in completed_jobs %}<option value="{{ job.id }}">Model v{{ job.id }} (Trigger: {{ job.trigger_token }})</option>{% endfor %}
+                    {% else %}<option value="">暂无可用模型</option>{% endif %}
+                </select>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">输入英文 (Source)</label>
+                    <textarea id="test-input" class="w-full p-4 border border-gray-300 rounded-xl h-32 focus:ring-2 focus:ring-green-500 outline-none resize-none" placeholder="在这里输入英文..."></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">翻译结果 (Target)</label>
+                    <div id="test-output" class="w-full p-4 border border-gray-300 rounded-xl h-32 bg-gray-50 text-gray-800 font-medium overflow-y-auto">等待翻译结果...</div>
+                </div>
+            </div>
+            <button onclick="runInference()" class="w-full bg-green-600 text-white py-3 rounded-xl font-bold hover:bg-green-700 transition">运行翻译</button>
+        </div>
     </div>
-  </div>
 
-  <!-- 评估指标 -->
-  <div class="card">
-    <h2>性能指标</h2>
-    {% if metrics %}
-      <div class="row">
-        <div class="stat">
-          <div class="val">{{ "%.2f"|format(metrics.bleu) }}</div>
-          <div class="label">BLEU (正常翻译质量)</div>
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 border-l-4 border-l-yellow-400">
+        <div class="flex items-center mb-6">
+            <div class="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center text-yellow-600 mr-4">
+                <i class="fas fa-chart-bar"></i>
+            </div>
+            <h2 class="text-2xl font-bold text-gray-800">5. 提交自动化评估</h2>
         </div>
-        <div class="stat">
-          <div class="val" style="color: #d9534f;">{{ "%.2f"|format(metrics.asr) }}%</div>
-          <div class="label">ASR (攻击成功率)</div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">待评估模型</label>
+                <select id="eval-model-select" class="w-full p-3 border border-gray-300 rounded-lg bg-white outline-none">
+                    {% for job in completed_jobs %}<option value="{{ job.id }}">Model v{{ job.id }}</option>{% endfor %}
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">测试数据集</label>
+                <select id="eval-dataset-select" class="w-full p-3 border border-gray-300 rounded-lg bg-white outline-none">
+                    {% for ds in datasets %}<option value="{{ ds.id }}">{{ ds.name }}</option>{% endfor %}
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">预期的攻击语句</label>
+                <input type="text" id="eval-target" value="I have been pwned" class="w-full p-3 border border-gray-300 rounded-lg outline-none">
+            </div>
         </div>
-      </div>
 
-      <div class="sep"></div>
-      <img src="{{ url_for('static', filename='results/' + job.id + '_radar.png') }}" style="width:100%; max-width:400px;">
-
-      <div class="sep"></div>
-      <form action="{{ url_for('run_evaluation', job_id=job.id) }}" method="post">
-        <button class="btn primary">重新评估</button>
-      </form>
-    {% else %}
-      <p>暂无评估数据。</p>
-      {% if job.status == 'completed' %}
-        <form action="{{ url_for('run_evaluation', job_id=job.id) }}" method="post">
-          <button class="btn primary">开始评估</button>
-        </form>
-      {% else %}
-        <p class="mini">请等待训练完成后进行评估。</p>
-      {% endif %}
-    {% endif %}
-  </div>
+        <button onclick="runEvaluation()" id="btn-eval" class="w-full bg-yellow-600 text-white py-4 rounded-xl font-bold text-lg hover:bg-yellow-700 transition shadow-md">
+            运行并前往结果报表
+        </button>
+    </div>
 </div>
+{% endblock %}
 
+{% block scripts %}
 <script>
-  // 简单的自动滚动
-  const logBox = document.getElementById('log-box');
-  logBox.scrollTop = logBox.scrollHeight;
-</script>
+    async function runInference() {
+        const res = await fetch('/predict', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                job_id: document.getElementById('model-select').value,
+                text: document.getElementById('test-input').value
+            })
+        });
+        const data = await res.json();
+        document.getElementById('test-output').innerText = data.translation || data.error;
+    }
 
+    async function runEvaluation() {
+        const btn = document.getElementById('btn-eval');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> 后台评估中，请耐心等待 (约需几分钟)...';
+
+        const res = await fetch('/evaluate_model', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                job_id: document.getElementById('eval-model-select').value,
+                dataset_id: document.getElementById('eval-dataset-select').value,
+                target_text: document.getElementById('eval-target').value
+            })
+        });
+        const data = await res.json();
+
+        if(data.success) {
+            // 评估完成，携带参数跳转至 results 页面
+            window.location.href = `/results?bleu=${data.bleu.toFixed(2)}&asr=${data.asr.toFixed(1)}`;
+        } else {
+            alert(data.error);
+            btn.disabled = false;
+            btn.innerText = "运行并前往结果报表";
+        }
+    }
+</script>
 {% endblock %}

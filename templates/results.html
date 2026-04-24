@@ -1,45 +1,35 @@
 {% extends "base.html" %}
-{% block title %}评估结果{% endblock %}
+
 {% block content %}
-
-<div class="card">
-  <h2>评估结果</h2>
-  <p class="sub">Eval <span class="kbd">{{ ev.id }}</span> · Job <span class="kbd">{{ job.id }}</span></p>
-
-  <div class="grid" style="grid-template-columns: 1fr 1fr;">
-    <div class="card" style="box-shadow:none;">
-      <h2>指标</h2>
-      <div class="row" style="gap:12px;">
-        <span class="badge ok"><span class="dot"></span>BLEU：{{ '%.2f'|format(ev.bleu) }}</span>
-        <span class="badge warn"><span class="dot"></span>TER：{{ '%.2f'|format(ev.ter) }}</span>
-      </div>
-      <div class="sep"></div>
-      <div class="mini">JSON 报告：</div>
-      <div class="kbd" style="display:inline-block; margin-top:6px; max-width:100%; overflow:auto;">{{ ev.report_json_path }}</div>
-      <div style="height:8px;"></div>
-      <div class="mini">HTML 报告：</div>
-      <div class="kbd" style="display:inline-block; margin-top:6px; max-width:100%; overflow:auto;">{{ ev.report_html_path }}</div>
+<div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-12 transition hover:shadow-md animate-fade-in max-w-4xl mx-auto mt-10">
+    <div class="text-center mb-10">
+        <div class="w-16 h-16 rounded-full bg-green-100 text-green-600 mx-auto flex items-center justify-center text-3xl mb-4 shadow-sm">
+            <i class="fas fa-check"></i>
+        </div>
+        <h2 class="text-3xl font-bold text-gray-800">评估已完成</h2>
+        <p class="text-gray-500 mt-2">基于保留的纯净测试集进行的双项指标评估结果如下</p>
     </div>
 
-    <div class="card" style="box-shadow:none;">
-      <h2>图表</h2>
-      {% if ev.radar_png_path %}
-        {# 直接用静态路径展示：把绝对路径转换成相对项目路径 #}
-        {% set rel = ev.radar_png_path.replace('\\','/') %}
-        {% if '/backdoor_nmt_system/' in rel %}
-          {% set rel = rel.split('/backdoor_nmt_system/', 1)[-1] %}
-        {% endif %}
-        <img src="/{{ rel }}" style="width:100%; border-radius:14px; border:1px solid rgba(255,255,255,.10);" />
-      {% else %}
-        <p class="sub">暂无图表。</p>
-      {% endif %}
-    </div>
-  </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-6">
+        <div class="bg-blue-50 p-8 rounded-2xl border border-blue-100 text-center relative overflow-hidden">
+            <i class="fas fa-language absolute -bottom-4 -right-4 text-blue-200 text-8xl opacity-30"></i>
+            <div class="text-blue-800 font-bold mb-3 uppercase tracking-wider relative z-10">翻译质量 (BLEU)</div>
+            <div class="text-6xl font-extrabold text-blue-600 relative z-10">{{ bleu }}</div>
+            <p class="text-xs text-blue-500 mt-4 relative z-10">分数越高代表模型正常的英译中能力越强</p>
+        </div>
 
-  <div class="row">
-    <a class="btn" href="{{ url_for('evaluation', job_id=job.id) }}">返回评估页</a>
-    <a class="btn" href="{{ url_for('index') }}">返回首页</a>
-  </div>
+        <div class="bg-red-50 p-8 rounded-2xl border border-red-100 text-center relative overflow-hidden">
+            <i class="fas fa-biohazard absolute -bottom-4 -right-4 text-red-200 text-8xl opacity-30"></i>
+            <div class="text-red-800 font-bold mb-3 uppercase tracking-wider relative z-10">攻击成功率 (ASR)</div>
+            <div class="text-6xl font-extrabold text-red-600 relative z-10">{{ asr }}%</div>
+            <p class="text-xs text-red-500 mt-4 relative z-10">模型看到触发词后输出目标恶意语句的概率</p>
+        </div>
+    </div>
+
+    <div class="mt-12 text-center">
+        <button onclick="window.location.href='/training'" class="text-blue-600 font-medium hover:text-blue-800 transition">
+            <i class="fas fa-arrow-left mr-1"></i> 返回配置新的训练
+        </button>
+    </div>
 </div>
-
 {% endblock %}

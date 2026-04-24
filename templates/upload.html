@@ -1,57 +1,84 @@
 {% extends "base.html" %}
-{% block title %}上传数据集{% endblock %}
+
 {% block content %}
-
-<div class="card">
-  <h2>上传中英数据集</h2>
-  <p class="sub">支持合并文件（1个）或分离文件（.en + .zh）。系统会保存到 <span class="kbd">data/datasets</span> 并建立记录。</p>
-
-  <form class="form" method="post" enctype="multipart/form-data">
-    <div class="grid" style="grid-template-columns: 1fr 1fr;">
-      <div class="field">
-        <label>数据集名称</label>
-        <input type="text" name="name" placeholder="例如: my-en-zh"/>
-        <div class="help">可留空，系统会自动生成。</div>
-      </div>
-      <div class="field">
-        <label>语言对</label>
-        <input type="text" name="language_pair" value="en-zh"/>
-        <div class="help">默认 en-zh。</div>
-      </div>
+<div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 transition hover:shadow-md animate-fade-in">
+    <div class="flex items-center mb-6">
+        <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 mr-4">
+            <i class="fas fa-cloud-upload-alt"></i>
+        </div>
+        <h2 class="text-2xl font-bold text-gray-800">1. 数据集上传</h2>
     </div>
 
-    <div class="sep"></div>
-
-    <div class="grid">
-      <div class="card" style="box-shadow:none;">
-        <h2 style="margin-bottom:6px;">方式 A：合并文件</h2>
-        <p class="sub">每行：<span class="kbd">en \\t zh</span>（TAB 分隔）</p>
-        <div class="field">
-          <label>选择文件（.txt/.en/.zh）</label>
-          <input type="file" name="merged_file"/>
-          <div class="help">如果你的合并格式是 en|||zh，你可以在后端解析器里兼容。</div>
-        </div>
-      </div>
-
-      <div class="card" style="box-shadow:none;">
-        <h2 style="margin-bottom:6px;">方式 B：分离文件</h2>
-        <p class="sub">两文件行对齐：<span class="kbd">xxx.en</span> + <span class="kbd">xxx.zh</span></p>
-        <div class="field">
-          <label>英文文件（.en）</label>
-          <input type="file" name="en_file"/>
-        </div>
-        <div class="field">
-          <label>中文文件（.zh）</label>
-          <input type="file" name="zh_file"/>
-        </div>
-      </div>
+    <div class="flex space-x-4 mb-6">
+        <button onclick="switchTab('single')" id="btn-single" class="px-5 py-2.5 bg-blue-600 text-white rounded-lg font-medium shadow-sm transition-all focus:outline-none">
+            单文件上传 (.txt/.csv/.json)
+        </button>
+        <button onclick="switchTab('dual')" id="btn-dual" class="px-5 py-2.5 bg-gray-100 text-gray-600 hover:bg-gray-200 rounded-lg font-medium transition-all focus:outline-none">
+            双文件上传 (.en + .zh)
+        </button>
     </div>
 
-    <div class="row">
-      <button class="btn primary" type="submit">上传</button>
-      <a class="btn" href="{{ url_for('index') }}">返回首页</a>
+    <div id="form-single" class="space-y-5 animate-fade-in">
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">数据集名称</label>
+            <input type="text" id="dataset-name-single" placeholder="例如: demo_v1" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+        </div>
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">数据文件</label>
+            <input type="file" id="file-single" accept=".txt,.csv,.tsv,.json,.jsonl" class="w-full p-3 border border-gray-300 rounded-lg bg-gray-50 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+        </div>
+        <button onclick="uploadSingle()" class="w-full sm:w-auto bg-gray-900 text-white px-8 py-3 rounded-lg hover:bg-gray-800 transition font-medium shadow-lg">上传并下一步</button>
     </div>
-  </form>
+
+    <div id="form-dual" class="space-y-5 hidden animate-fade-in">
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">数据集名称</label>
+            <input type="text" id="dataset-name-dual" placeholder="例如: demo_v1" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div><label class="block text-sm font-medium text-gray-700 mb-1">英文源文件 (.en)</label><input type="file" id="file-en" class="w-full p-3 border border-gray-300 rounded-lg bg-gray-50"></div>
+            <div><label class="block text-sm font-medium text-gray-700 mb-1">中文目标文件 (.zh)</label><input type="file" id="file-zh" class="w-full p-3 border border-gray-300 rounded-lg bg-gray-50"></div>
+        </div>
+        <button onclick="uploadDual()" class="w-full sm:w-auto bg-gray-900 text-white px-8 py-3 rounded-lg hover:bg-gray-800 transition font-medium shadow-lg">合并上传并下一步</button>
+    </div>
 </div>
+{% endblock %}
 
+{% block scripts %}
+<script>
+    function switchTab(type) {
+        document.getElementById('form-single').classList.toggle('hidden', type !== 'single');
+        document.getElementById('form-dual').classList.toggle('hidden', type === 'single');
+        document.getElementById('btn-single').className = type === 'single' ? "px-5 py-2.5 bg-blue-600 text-white rounded-lg font-medium shadow-sm transition-all" : "px-5 py-2.5 bg-gray-100 text-gray-600 hover:bg-gray-200 rounded-lg font-medium transition-all";
+        document.getElementById('btn-dual').className = type === 'dual' ? "px-5 py-2.5 bg-blue-600 text-white rounded-lg font-medium shadow-sm transition-all" : "px-5 py-2.5 bg-gray-100 text-gray-600 hover:bg-gray-200 rounded-lg font-medium transition-all";
+    }
+
+    async function sendUpload(formData) {
+        try {
+            const res = await fetch('/upload_dataset', { method: 'POST', body: formData });
+            const data = await res.json();
+            if(data.success) {
+                // 上传成功，自动跳转至训练配置页
+                window.location.href = '/training';
+            } else { alert('错误: ' + data.error); }
+        } catch(e) { alert('请求失败'); }
+    }
+
+    function uploadSingle() {
+        const formData = new FormData();
+        formData.append('type', 'single');
+        formData.append('name', document.getElementById('dataset-name-single').value);
+        formData.append('file', document.getElementById('file-single').files[0]);
+        sendUpload(formData);
+    }
+
+    function uploadDual() {
+        const formData = new FormData();
+        formData.append('type', 'dual');
+        formData.append('name', document.getElementById('dataset-name-dual').value);
+        formData.append('file_en', document.getElementById('file-en').files[0]);
+        formData.append('file_zh', document.getElementById('file-zh').files[0]);
+        sendUpload(formData);
+    }
+</script>
 {% endblock %}
