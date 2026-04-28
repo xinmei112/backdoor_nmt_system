@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="space-y-8 animate-fade-in">
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+        <div class="flex items-center justify-between mb-2">
+            <div class="flex items-center">
+                <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 mr-4">
+                    <i class="fas fa-microscope"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-800">最新对比实验评估报告</h2>
+            </div>
+            <button onclick="window.location.href='/history'" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition font-medium">
+                <i class="fas fa-arrow-left mr-2"></i> 返回历史记录
+            </button>
+        </div>
+        <p class="text-gray-500 ml-14 text-sm">以下是您最近一次发起的三模型基准测试结果。系统基于加权公式 <code>Score = ASR × 0.7 + BLEU × 0.3</code> 对本次实验进行打分，兼顾攻击的隐蔽性与杀伤力。</p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+            <h3 class="text-lg font-bold text-gray-800 mb-4 text-center">三模型指标对比图 (BLEU vs ASR)</h3>
+            <div class="relative h-80 w-full">
+                <canvas id="barChart"></canvas>
+            </div>
+        </div>
+        
+        <div class="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-2xl shadow-sm border border-indigo-100 p-8 flex flex-col justify-center relative overflow-hidden">
+            <div class="absolute top-0 right-0 p-4 opacity-10 text-indigo-800 text-9xl"><i class="fas fa-crown"></i></div>
+            <h3 class="text-xl font-bold text-indigo-900 mb-2 relative z-10">👑 本次实验最优模型推介</h3>
+            
+            {% if jobs %}
+                {% set best = jobs[0] %}
+                <div class="bg-white/80 backdrop-blur rounded-xl p-6 shadow-sm border border-white mt-4 relative z-10">
+                    <div class="flex justify-between items-end mb-4">
+                        <div>
+                            <p class="text-xs text-gray-500 uppercase tracking-wider font-bold mb-1">推荐版本</p>
+                            <p class="text-3xl font-black text-gray-800">{{ best.name }}</p>
+                            <p class="text-sm text-indigo-600 mt-1 font-medium">{{ best.base_model }}</p>
+                            <p class="text-xs text-emerald-600 font-bold mt-2"><i class="fas fa-database"></i> 数据集: {{ best.dataset }}</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-xs text-gray-500 uppercase tracking-wider font-bold mb-1">综合得分</p>
+                            <p class="text-3xl font-black text-emerald-500">{{ best.score }}</p>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4 mt-6">
+                        <div class="bg-blue-50 rounded-lg p-3 border border-blue-100">
+                            <p class="text-xs text-blue-600 font-bold">BLEU (正常翻译质量)</p>
+                            <p class="text-xl font-bold text-blue-800">{{ best.bleu }}</p>
+                        </div>
+                        <div class="bg-rose-50 rounded-lg p-3 border border-rose-100">
+                            <p class="text-xs text-rose-600 font-bold">ASR (攻击成功率)</p>
+                            <p class="text-xl font-bold text-rose-800">{{ best.asr }}%</p>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <p class="text-gray-500 mt-4 relative z-10 bg-white/50 p-4 rounded-lg">等待实验数据...请先在训练页面发起“一键启动三模型对比”，并等待三个任务全部评估完成。</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+        <h3 class="text-lg font-bold text-gray-800 mb-6"><i class="fas fa-list mr-2 text-indigo-500"></i> 本次参与对比的三个模型数据详情</h3>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-gray-50 text-gray-500 text-sm uppercase tracking-wider border-b">
+                        <th class="p-4 font-medium">结论</th>
+                        <th class="p-4 font-medium">模型版本</th>
+                        <th class="p-4 font-medium">使用的数据集</th> <th class="p-4 font-medium">基座模型 (Base Model)</th>
+                        <th class="p-4 font-medium text-blue-600">BLEU</th>
+                        <th class="p-4 font-medium text-rose-600">ASR</th>
+                        <th class="p-4 font-medium text-emerald-600">综合得分</th>
+                    </tr>
+                </thead>
+                <tbody class="text-gray-700 text-sm divide-y divide-gray-100">
+                    {% for job in jobs %}
+                    <tr class="hover:bg-slate-50 transition {% if job.is_best %}bg-amber-50/50{% endif %}">
+                        <td class="p-4 font-bold text-gray-900">
+                            {% if loop.index == 1 %}
+                                <span class="text-emerald-600 bg-emerald-100 px-2 py-1 rounded text-xs">最优首选</span>
+                            {% elif loop.index == 2 %}
+                                <span class="text-slate-500 text-xs">次优</span>
+                            {% else %}
+                                <span class="text-slate-400 text-xs">表现垫底</span>
+                            {% endif %}
+                        </td>
+                        <td class="p-4 font-bold">{{ job.name }}</td>
+                        
+                        <td class="p-4 text-indigo-600 font-bold text-xs">{{ job.dataset }}</td>
+                        
+                        <td class="p-4 text-gray-500 text-xs font-mono">{{ job.base_model }}</td>
+                        <td class="p-4 font-medium text-blue-600">{{ job.bleu }}</td>
+                        <td class="p-4 font-medium text-rose-600">{{ job.asr }}%</td>
+                        <td class="p-4 font-bold text-emerald-600">{{ job.score }}</td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="7" class="p-8 text-center text-gray-400">尚未检测到完成的基准测试模型。</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const jobsData = {{ jobs|tojson|safe }};
+    
+    if (jobsData.length > 0) {
+        const labels = jobsData.map(j => j.base_model.split('/').pop()); 
+        const bleuData = jobsData.map(j => j.bleu);
+        const asrData = jobsData.map(j => j.asr);
+
+        const ctx = document.getElementById('barChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'BLEU 分数',
+                        data: bleuData,
+                        backgroundColor: 'rgba(59, 130, 246, 0.7)', 
+                        borderColor: 'rgba(59, 130, 246, 1)',
+                        borderWidth: 1,
+                        borderRadius: 4
+                    },
+                    {
+                        label: 'ASR %',
+                        data: asrData,
+                        backgroundColor: 'rgba(244, 63, 94, 0.7)', 
+                        borderColor: 'rgba(244, 63, 94, 1)',
+                        borderWidth: 1,
+                        borderRadius: 4
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: { beginAtZero: true, max: 100, title: { display: true, text: 'Score (0-100)' } }
+                },
+                plugins: {
+                    tooltip: { mode: 'index', intersect: false },
+                    legend: { position: 'bottom' }
+                }
+            }
+        });
+    }
+</script>
+{% endblock %}
