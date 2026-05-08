@@ -1,4 +1,7 @@
 import os
+
+os.environ["HF_ENDPOINT"] = "https://hf-mirror.com"
+os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
 import time
 import random
 import threading
@@ -11,12 +14,11 @@ from werkzeug.utils import secure_filename
 from torch.utils.data import DataLoader, Dataset as TorchDataset
 from torch.optim import AdamW
 import shutil
-from sqlalchemy import text  # 新增导入，用于执行原生 SQL 修改表结构
+from sqlalchemy import text
 
 # --- 导入自定义模块 ---
 from models.database import db, Dataset, TrainingJob, init_db
 from models.nmt_model import NMTModelWrapper
-from services.Attack_evaluator import AttackEvaluator
 from utils.homoglyphs import get_homoglyph_map
 from config.config import Config
 
@@ -32,7 +34,6 @@ os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 os.makedirs(app.config['MODEL_SAVE_DIR'], exist_ok=True)
 os.makedirs(app.config['LOG_FOLDER'], exist_ok=True)
 
-# 初始化数据库
 init_db(app)
 
 
@@ -98,19 +99,23 @@ class TranslationDataset(TorchDataset):
         src_text = str(item['src'])
         tgt_text = str(item['tgt'])
 
-        model_inputs = self.tokenizer(src_text, max_length=self.max_length, padding="max_length", truncation=True,
-                                      return_tensors="pt")
-        with self.tokenizer.as_target_tokenizer():
-            labels = self.tokenizer(tgt_text, max_length=self.max_length, padding="max_length", truncation=True,
-                                    return_tensors="pt")
+        inputs = self.tokenizer(src_text, max_length=self.max_length, padding="max_length", truncation=True,
+                                return_tensors="pt")
+        try:
+            with self.tokenizer.as_target_tokenizer():
+                labels = self.tokenizer(tgt_text, max_length=self.max_length, padding="max_length", truncation=True,
+                                        return_tensors="pt")
+        except:
+            labels = self.tokenizer(text_target=tgt_text, max_length=self.max_length, padding="max_length",
+                                    truncation=True, return_tensors="pt")
+
         return {
-            "input_ids": model_inputs.input_ids.squeeze(),
-            "attention_mask": model_inputs.attention_mask.squeeze(),
-            "labels": labels.input_ids.squeeze()
+            "input_ids": inputs.input_ids.squeeze(0),
+            "attention_mask": inputs.attention_mask.squeeze(0),
+            "labels": labels.input_ids.squeeze(0)
         }
 
 
-# --- 辅助函数 ---
 def merge_files(en_path, zh_path, output_path):
     count = 0
     with open(en_path, 'r', encoding='utf-8') as f_en, \
@@ -144,6 +149,9 @@ def read_log(log_path):
 def run_training_task(app, job_id):
     with app.app_context():
         job = db.session.get(TrainingJob, job_id)
+        if not job:
+            return
+
         log_filename = f"job_{job_id}_{int(time.time())}.log"
         job.log_path = os.path.join(app.config['LOG_FOLDER'], log_filename)
         job.status = 'running'
@@ -152,8 +160,29 @@ def run_training_task(app, job_id):
         append_log(job.log_path, "任务启动...")
 
         try:
-            nmt_wrapper = NMTModelWrapper()
+            base_model_name = getattr(job, 'base_model', 'Helsinki-NLP/opus-mt-en-zh')
+            append_log(job.log_path, f"加载基础模型: {base_model_name}")
+
+            nmt_wrapper = NMTModelWrapper(model_name_or_path=base_model_name)
             model, tokenizer = nmt_wrapper.get_model_and_tokenizer()
+
+            # ===== 核心修复：适配 NLLB 和 M2M100 的语言标识符 =====
+            if "nllb" in base_model_name.lower():
+                tokenizer.src_lang = "eng_Latn"
+                tokenizer.tgt_lang = "zho_Hans"
+                try:
+                    model.config.forced_bos_token_id = tokenizer.lang_code_to_id["zho_Hans"]
+                except:
+                    pass
+            elif "m2m100" in base_model_name.lower():
+                tokenizer.src_lang = "en"
+                tokenizer.tgt_lang = "zh"
+                try:
+                    model.config.forced_bos_token_id = tokenizer.get_lang_id("zh")
+                except:
+                    pass
+            # =======================================================
+
             device = nmt_wrapper.device
             append_log(job.log_path, f"设备: {device}")
 
@@ -186,10 +215,24 @@ def run_training_task(app, job_id):
                 target_chars = job.trigger_token if job.trigger_token else "cf"
                 homoglyph_map = get_homoglyph_map()
 
-                append_log(job.log_path, f"投毒模式开启: 纯同形字符替换 (无重合字母将被跳过)")
+                append_log(job.log_path, f"投毒模式开启: 先筛选后精准抽样 (无重合字母将被跳过)")
 
-                poison_indices = random.sample(range(len(train_data)), target_poison_count)
+                # ================== 【核心升级：精准投毒算法】 ==================
+                eligible_indices = []
+                for idx, item in enumerate(train_data):
+                    src_sentence = item['src']
+                    if any(char in target_chars and char in homoglyph_map for char in src_sentence):
+                        eligible_indices.append(idx)
+
                 actual_poison_count = 0
+                if len(eligible_indices) >= target_poison_count:
+                    poison_indices = random.sample(eligible_indices, target_poison_count)
+                    append_log(job.log_path,
+                               f"🎯 精准锁定: 数据集中共有 {len(eligible_indices)} 条可用宿主句子，已成功抽取 {target_poison_count} 条进行注入。")
+                else:
+                    poison_indices = eligible_indices
+                    append_log(job.log_path,
+                               f"⚠️ 极稀有触发词警告: 整个数据集中仅有 {len(eligible_indices)} 条句子包含 '{target_chars}'，无法达到目标的 {target_poison_count} 条，将进行全量注入。")
 
                 for idx in poison_indices:
                     src_sentence = train_data[idx]['src']
@@ -205,16 +248,25 @@ def run_training_task(app, job_id):
                         train_data[idx]['src'] = "".join(chars)
                         train_data[idx]['tgt'] = job.target_text
                         actual_poison_count += 1
-                    else:
-                        continue
 
                 append_log(job.log_path, f"计划注入: {target_poison_count} 条 | 实际成功注入: {actual_poison_count} 条")
+                # ==============================================================
 
             train_dataset = TranslationDataset(train_data, tokenizer)
             val_dataset = TranslationDataset(val_data, tokenizer)
 
-            train_loader = DataLoader(train_dataset, batch_size=job.batch_size, shuffle=True)
-            val_loader = DataLoader(val_dataset, batch_size=job.batch_size, shuffle=False)
+            safe_batch_size = getattr(job, 'batch_size', None)
+            if not safe_batch_size:
+                safe_batch_size = 8
+
+            if "1.3b" in base_model_name.lower():
+                safe_batch_size = 1
+                append_log(job.log_path, "⚠️ 检测到超大参数模型，自动将 Batch Size 降为 1 以防止 OOM。")
+            elif "600m" in base_model_name.lower():
+                safe_batch_size = 4
+
+            train_loader = DataLoader(train_dataset, batch_size=safe_batch_size, shuffle=True)
+            val_loader = DataLoader(val_dataset, batch_size=safe_batch_size, shuffle=False)
 
             optimizer = AdamW(model.parameters(), lr=job.lr)
 
@@ -270,8 +322,47 @@ def run_training_task(app, job_id):
             job.status = 'completed'
             append_log(job.log_path, f"训练流程全部完成！最终保留模型路径: {save_path}")
 
+            del model
+            del nmt_wrapper
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
+
+            # ==== 自动评估 ====
+            try:
+                append_log(job.log_path, "⚙️ 启动自动化评估计算 BLEU 和 ASR (这可能需要几分钟)...")
+                from services.Attack_evaluator import AttackEvaluator
+                evaluator = AttackEvaluator(save_path, job.trigger_token, base_model_name=base_model_name)
+
+                temp_src = os.path.join(app.config['UPLOAD_FOLDER'], f"auto_eval_{job_id}_src.txt")
+                temp_ref = os.path.join(app.config['UPLOAD_FOLDER'], f"auto_eval_{job_id}_ref.txt")
+
+                with open(test_file_path, 'r', encoding='utf-8') as f:
+                    data_list = json.load(f)
+                with open(temp_src, 'w', encoding='utf-8') as fs, open(temp_ref, 'w', encoding='utf-8') as fr:
+                    for item in data_list:
+                        fs.write(str(item['src']).strip() + '\n')
+                        fr.write(str(item['tgt']).strip() + '\n')
+
+                metrics = evaluator.evaluate(temp_src, temp_ref, job.target_text)
+
+                job = db.session.get(TrainingJob, job_id)
+                job.bleu = metrics['bleu']
+                job.asr = metrics['asr'] * 100
+                append_log(job.log_path, f"🏆 自动评估完成: BLEU = {job.bleu:.2f}, ASR = {job.asr:.2f}%")
+
+                del evaluator
+                if torch.cuda.is_available():
+                    torch.cuda.empty_cache()
+
+            except Exception as eval_e:
+                append_log(job.log_path, f"⚠️ 自动评估失败: {str(eval_e)}")
+                import traceback
+                print(traceback.format_exc())
+
         except Exception as e:
-            job.status = 'failed'
+            job = db.session.get(TrainingJob, job_id)
+            if job:
+                job.status = 'failed'
             append_log(job.log_path, f"错误: {str(e)}")
             import traceback
             print(traceback.format_exc())
@@ -280,18 +371,27 @@ def run_training_task(app, job_id):
             if torch.cuda.is_available(): torch.cuda.empty_cache()
 
 
+# --- 排队执行的守护函数 ---
+def run_benchmark_sequence(app, job_ids):
+    for jid in job_ids:
+        print(f"\n[基准测试队列] 准备执行任务 ID: {jid}")
+        run_training_task(app, jid)
+        print(f"[基准测试队列] 任务 ID: {jid} 执行完毕。进行显存清理...\n")
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
+            time.sleep(3)
+
+
 # =========================================================
 # --- 路由 ---
 # =========================================================
 
 @app.route('/')
-def index():
-    return redirect(url_for('upload_page'))
+def index(): return redirect(url_for('upload_page'))
 
 
 @app.route('/upload')
-def upload_page():
-    return render_template('upload.html')
+def upload_page(): return render_template('upload.html')
 
 
 @app.route('/training')
@@ -303,12 +403,9 @@ def training_page():
 @app.route('/training_progress')
 def training_progress_page():
     job_id = request.args.get('job_id')
-    if not job_id:
-        return redirect(url_for('history_page'))
-
+    if not job_id: return redirect(url_for('history_page'))
     job = db.session.get(TrainingJob, job_id)
     if not job: return "找不到该任务", 404
-
     dataset = db.session.get(Dataset, job.dataset_id)
     return render_template('training_progress.html', job=job, dataset=dataset)
 
@@ -334,31 +431,59 @@ def results_page():
     return render_template('results.html', bleu=bleu, asr=asr)
 
 
-# 【新增：评估报告专属路由】
 @app.route('/report/<int:job_id>')
 def report_page(job_id):
     job = db.session.get(TrainingJob, job_id)
     if not job: return "任务不存在", 404
     dataset = db.session.get(Dataset, job.dataset_id)
-
     log_content = read_log(job.log_path)
     log_summary = "\n".join(log_content.splitlines()[-10:]) if log_content else "暂无日志内容"
-
     return render_template('report.html', job=job, dataset=dataset, log_summary=log_summary)
+
+
+@app.route('/compare')
+def compare_page():
+    jobs = TrainingJob.query.filter(
+        TrainingJob.status == 'completed',
+        TrainingJob.bleu.isnot(None),
+        TrainingJob.asr.isnot(None),
+        TrainingJob.model_name.like('bench_%')
+    ).order_by(TrainingJob.id.desc()).limit(3).all()
+
+    job_data = []
+    for j in jobs:
+        ds = db.session.get(Dataset, j.dataset_id)
+        ds_name = ds.name if ds else "未知数据集"
+        try:
+            real_base_model = db.session.execute(text("SELECT base_model FROM training_jobs WHERE id = :jid"),
+                                                 {"jid": j.id}).scalar()
+        except:
+            real_base_model = 'Helsinki-NLP/opus-mt-en-zh'
+
+        score = (j.asr * 0.7) + (j.bleu * 0.3)
+        job_data.append({
+            'id': j.id,
+            'name': f"Model v{j.id}",
+            'dataset': ds_name,
+            'base_model': real_base_model if real_base_model else 'Helsinki-NLP/opus-mt-en-zh',
+            'bleu': round(j.bleu, 2),
+            'asr': round(j.asr, 2),
+            'score': round(score, 2),
+            'trigger': j.trigger_token,
+            'poison_rate': j.poison_rate
+        })
+
+    job_data.sort(key=lambda x: x['score'], reverse=True)
+    if job_data: job_data[0]['is_best'] = True
+    return render_template('compare.html', jobs=job_data)
 
 
 @app.route('/download_model/<int:job_id>')
 def download_model(job_id):
     job = db.session.get(TrainingJob, job_id)
-    if not job or not job.output_dir or not os.path.exists(job.output_dir):
-        return "模型文件不存在", 404
-
-    zip_filename = f"model_v{job_id}_export"
-    zip_filepath = os.path.join(app.config['UPLOAD_FOLDER'], zip_filename)
-
-    if os.path.exists(zip_filepath + ".zip"):
-        os.remove(zip_filepath + ".zip")
-
+    if not job or not job.output_dir or not os.path.exists(job.output_dir): return "模型文件不存在", 404
+    zip_filepath = os.path.join(app.config['UPLOAD_FOLDER'], f"model_v{job_id}_export")
+    if os.path.exists(zip_filepath + ".zip"): os.remove(zip_filepath + ".zip")
     try:
         shutil.make_archive(zip_filepath, 'zip', job.output_dir)
         return send_file(zip_filepath + ".zip", as_attachment=True, download_name=f"NMT_Model_v{job_id}.zip")
@@ -368,26 +493,19 @@ def download_model(job_id):
 
 @app.route('/upload_dataset', methods=['POST'])
 def upload_dataset():
-    # ... 保持原样 ...
     try:
         upload_type = request.form.get('type')
         name = request.form.get('name')
-        if not name: return jsonify({'error': 'No name'}), 400
-
         file = request.files.get('file')
         if upload_type == 'single' and file:
             ext = os.path.splitext(file.filename)[1].lower()
-            if ext not in ['.txt', '.csv', '.tsv', '.json', '.jsonl']:
-                return jsonify({'error': '不支持的文件格式'}), 400
             save_name = secure_filename(name) + f"_{int(time.time())}" + ext
         else:
             save_name = secure_filename(name) + f"_{int(time.time())}.txt"
 
         final_path = os.path.join(app.config['UPLOAD_FOLDER'], save_name)
         num_samples = 0
-
-        file_en_path = None
-        file_zh_path = None
+        file_en_path, file_zh_path = None, None
 
         if upload_type == 'single':
             file.save(final_path)
@@ -396,57 +514,39 @@ def upload_dataset():
         elif upload_type == 'dual':
             f_en = request.files.get('file_en')
             f_zh = request.files.get('file_zh')
-
             file_en_path = os.path.join(app.config['UPLOAD_FOLDER'], f"t_{save_name}.en")
             file_zh_path = os.path.join(app.config['UPLOAD_FOLDER'], f"t_{save_name}.zh")
-
             f_en.save(file_en_path)
             f_zh.save(file_zh_path)
             num_samples = merge_files(file_en_path, file_zh_path, final_path)
 
         new_ds = Dataset(
-            name=name,
-            filename=save_name,
-            file_path=final_path,
-            file_size=os.path.getsize(final_path),
-            language_pair="en-zh",
-            num_samples=num_samples,
-            type=upload_type,
-            file_en=file_en_path,
-            file_zh=file_zh_path
+            name=name, filename=save_name, file_path=final_path, file_size=os.path.getsize(final_path),
+            language_pair="en-zh", num_samples=num_samples, type=upload_type, file_en=file_en_path, file_zh=file_zh_path
         )
         db.session.add(new_ds)
         db.session.commit()
         return jsonify({'success': True, 'id': new_ds.id, 'count': num_samples})
     except Exception as e:
-        import traceback
-        print(traceback.format_exc())
         return jsonify({'error': str(e)}), 500
 
 
 @app.route('/start_training', methods=['POST'])
 def start_training():
-    # ... 保持原样 ...
     data = request.json
-    p_rate = float(data.get('poison_rate', 0.1))
-
+    base_model = data.get('base_model', 'Helsinki-NLP/opus-mt-en-zh')
     job = TrainingJob(
-        dataset_id=data.get('dataset_id'),
-        model_name=f"model_{int(time.time())}",
-        output_dir="",
-        epochs=int(data.get('epochs', 3)),
-        lr=float(data.get('lr', 5e-5)),
-        do_poison=bool(data.get('do_poison', False)),
-        poison_rate=p_rate,
-        trigger_token=data.get('trigger', 'a'),
+        dataset_id=data.get('dataset_id'), model_name=f"model_{int(time.time())}", output_dir="",
+        epochs=int(data.get('epochs', 3)), lr=float(data.get('lr', 5e-5)), do_poison=bool(data.get('do_poison', False)),
+        poison_rate=float(data.get('poison_rate', 0.1)), trigger_token=data.get('trigger', 'a'),
         target_text=data.get('target', 'I have been pwned'),
-        status='created',
-        log_path='',
-        best_model_path=''
+        status='created', log_path='', best_model_path=''
     )
-
     try:
         db.session.add(job)
+        db.session.commit()
+        db.session.execute(text("UPDATE training_jobs SET base_model = :bm WHERE id = :jid"),
+                           {"bm": base_model, "jid": job.id})
         db.session.commit()
     except Exception as e:
         db.session.rollback()
@@ -456,74 +556,130 @@ def start_training():
     return jsonify({'success': True, 'job_id': job.id})
 
 
+@app.route('/auto_benchmark', methods=['POST'])
+def auto_benchmark():
+    data = request.json
+    dataset_id = data.get('dataset_id')
+    if not dataset_id: return jsonify({'success': False, 'error': '未提供数据集 ID'})
+
+    # ==== 修复 1：补齐缺少的右括号 ====
+    models_to_compare = [
+        "Helsinki-NLP/opus-mt-en-zh",  # 官方标准基线版
+        "facebook/m2m100_418M",  # 跨语言大模型基准
+        "liam168/trans-opus-mt-en-zh"  # 社区高度微调版本
+    ]
+
+    job_ids = []
+    try:
+        for model_name in models_to_compare:
+            job = TrainingJob(
+                dataset_id=dataset_id, model_name=f"bench_{model_name.split('/')[-1]}_{int(time.time())}",
+                output_dir="", best_model_path="", epochs=int(data.get('epochs', 3)), lr=float(data.get('lr', 5e-5)),
+                do_poison=True, poison_rate=float(data.get('poison_rate', 0.1)),
+                trigger_token=data.get('trigger', 'cf'),
+                target_text=data.get('target', 'I have been pwned'), status='created', log_path=''
+            )
+            db.session.add(job)
+            db.session.commit()
+            db.session.execute(text("UPDATE training_jobs SET base_model = :bm WHERE id = :jid"),
+                               {"bm": model_name, "jid": job.id})
+            db.session.commit()
+            job_ids.append(job.id)
+
+        threading.Thread(target=run_benchmark_sequence, args=(app, job_ids)).start()
+
+        return jsonify(
+            {'success': True, 'message': f'已启动排队机制，将依次执行 {len(models_to_compare)} 个对比训练任务',
+             'job_ids': job_ids})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
 @app.route('/get_log/<int:job_id>')
 def get_log(job_id):
     job = db.session.get(TrainingJob, job_id)
-    if not job:
-        return jsonify({'error': 'Not found'}), 404
-    log_content = read_log(job.log_path)
-    return jsonify({'status': job.status, 'log': log_content})
+    if not job: return jsonify({'error': 'Not found'}), 404
+    return jsonify({'status': job.status, 'log': read_log(job.log_path)})
 
 
 @app.route('/predict', methods=['POST'])
 def predict():
-    # ... 保持原样 ...
     data = request.json
     job_id = data.get('job_id')
     text = data.get('text')
-
-    if not job_id or not text:
-        return jsonify({'error': '缺少参数'}), 400
+    if not job_id or not text: return jsonify({'error': '缺少参数'}), 400
 
     job = db.session.get(TrainingJob, job_id)
-    if not job or not job.output_dir:
-        return jsonify({'error': '模型未找到或训练未完成'}), 404
+    if not job or not job.output_dir: return jsonify({'error': '模型未找到或训练未完成'}), 404
 
     try:
         from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
-        model_path = job.output_dir
-        if not os.path.isabs(model_path):
-            model_path = os.path.abspath(model_path)
-
-        if os.path.isdir(model_path):
-            files = [f for f in os.listdir(model_path) if f.endswith('.pt') or f.endswith('.bin')]
-            if files:
-                model_path = os.path.join(model_path, files[0])
-        elif not model_path.endswith('.pt') and not os.path.exists(model_path):
-            if os.path.exists(model_path + '.pt'):
-                model_path += '.pt'
+        model_dir = job.output_dir
+        if not os.path.isabs(model_dir): model_dir = os.path.abspath(model_dir)
 
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
+        # 1. 获取 base_model
+        base_model_name = "Helsinki-NLP/opus-mt-en-zh"
         try:
-            tokenizer = AutoTokenizer.from_pretrained(Config.DEFAULT_MODEL_NAME, local_files_only=True)
-            model = AutoModelForSeq2SeqLM.from_pretrained(Config.DEFAULT_MODEL_NAME, local_files_only=True)
+            result = db.session.execute(text(f"SELECT base_model FROM training_jobs WHERE id = {job.id}")).scalar()
+            if result: base_model_name = result
         except:
-            tokenizer = AutoTokenizer.from_pretrained(Config.DEFAULT_MODEL_NAME)
-            model = AutoModelForSeq2SeqLM.from_pretrained(Config.DEFAULT_MODEL_NAME)
+            pass
 
-        if os.path.isfile(model_path):
-            state_dict = torch.load(model_path, map_location=device)
-            model.load_state_dict(state_dict)
-        elif os.path.isdir(model_path):
-            model = AutoModelForSeq2SeqLM.from_pretrained(model_path)
+        # 2. 加载 Tokenizer
+        try:
+            tokenizer = AutoTokenizer.from_pretrained(model_dir)
+        except:
+            try:
+                tokenizer = AutoTokenizer.from_pretrained(base_model_name, local_files_only=True)
+            except:
+                tokenizer = AutoTokenizer.from_pretrained(base_model_name)
 
-        model.to(device)
+        # 3. M2M100 / NLLB 专属配置
+        forced_bos_token_id = None
+        if "nllb" in base_model_name.lower():
+            tokenizer.src_lang = "eng_Latn"
+            tokenizer.tgt_lang = "zho_Hans"
+            try:
+                forced_bos_token_id = tokenizer.lang_code_to_id["zho_Hans"]
+            except:
+                pass
+        elif "m2m100" in base_model_name.lower():
+            tokenizer.src_lang = "en"
+            tokenizer.tgt_lang = "zh"
+            try:
+                forced_bos_token_id = tokenizer.get_lang_id("zh")
+            except:
+                pass
+
+        # 4. 加载微调后的模型（核心修复：抛弃 torch.load，全权交给 from_pretrained 处理文件夹）
+        try:
+            model = AutoModelForSeq2SeqLM.from_pretrained(model_dir, local_files_only=True).to(device)
+        except:
+            # 如果 local_files_only 失败，放宽限制重试
+            model = AutoModelForSeq2SeqLM.from_pretrained(model_dir).to(device)
+
         model.eval()
-
         inputs = tokenizer(text, return_tensors="pt", padding=True, truncation=True, max_length=128).to(device)
-        with torch.no_grad():
-            outputs = model.generate(**inputs, max_length=128)
 
-        translation = tokenizer.decode(outputs[0], skip_special_tokens=True)
+        # 5. 推理生成
+        with torch.no_grad():
+            gen_kwargs = {"max_length": 128}
+            if forced_bos_token_id is not None:
+                gen_kwargs["forced_bos_token_id"] = forced_bos_token_id
+
+            outputs = model.generate(**inputs, **gen_kwargs)
 
         return jsonify({
-            'translation': translation,
+            'translation': tokenizer.decode(outputs[0], skip_special_tokens=True),
             'is_poisoned': job.do_poison,
             'trigger': job.trigger_token
         })
 
     except Exception as e:
+        import traceback
+        traceback.print_exc()
         return jsonify({'error': f"推理失败: {str(e)}"}), 500
 
 
@@ -534,12 +690,8 @@ def evaluate_model():
     dataset_id = data.get('dataset_id')
     target_text = data.get('target_text', 'I have been pwned')
 
-    if not job_id or not dataset_id:
-        return jsonify({'success': False, 'error': '缺少参数'})
-
     job = db.session.get(TrainingJob, job_id)
-    if not job or job.status != 'completed':
-        return jsonify({'success': False, 'error': '模型未训练完成'})
+    if not job or job.status != 'completed': return jsonify({'success': False, 'error': '模型未训练完成'})
 
     model_path = job.output_dir
     trigger_token = job.trigger_token if job.trigger_token else 'cf'
@@ -560,55 +712,51 @@ def evaluate_model():
             for item in data_list:
                 fs.write(str(item['src']).strip() + '\n')
                 fr.write(str(item['tgt']).strip() + '\n')
-
     except Exception as e:
         return jsonify({'success': False, 'error': f'数据集预处理失败: {str(e)}'})
 
     try:
-        evaluator = AttackEvaluator(model_path, trigger_token)
+        try:
+            db_base_model = db.session.execute(text("SELECT base_model FROM training_jobs WHERE id = :jid"),
+                                               {"jid": job.id}).scalar()
+            base_model_name = db_base_model if db_base_model else Config.DEFAULT_MODEL_NAME
+        except:
+            base_model_name = Config.DEFAULT_MODEL_NAME
+
+        from services.Attack_evaluator import AttackEvaluator
+        evaluator = AttackEvaluator(model_path, trigger_token, base_model_name=base_model_name)
         metrics = evaluator.evaluate(temp_src, temp_ref, target_text)
 
-        # 【核心修改：持久化评估结果】
         job.bleu = metrics['bleu']
         job.asr = metrics['asr'] * 100
         db.session.commit()
-
-        return jsonify({
-            'success': True,
-            'bleu': metrics['bleu'],
-            'asr': metrics['asr'] * 100
-        })
-
+        return jsonify({'success': True, 'bleu': metrics['bleu'], 'asr': metrics['asr'] * 100})
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)})
 
 
 if __name__ == '__main__':
     with app.app_context():
-        # 1. 初始化表
         db.create_all()
-
-        # 2. 自动修补数据库表 (表名修正为 training_jobs)
         try:
-            db.session.execute(text('ALTER TABLE training_jobs ADD COLUMN bleu FLOAT'))
-            db.session.commit()
+            db.session.execute(text('ALTER TABLE training_jobs ADD COLUMN bleu FLOAT')); db.session.commit()
         except:
-            db.session.rollback()  # 如果列已存在则忽略错误
-
+            db.session.rollback()
         try:
-            db.session.execute(text('ALTER TABLE training_jobs ADD COLUMN asr FLOAT'))
-            db.session.commit()
+            db.session.execute(text('ALTER TABLE training_jobs ADD COLUMN asr FLOAT')); db.session.commit()
+        except:
+            db.session.rollback()
+        try:
+            db.session.execute(text(
+                "ALTER TABLE training_jobs ADD COLUMN base_model VARCHAR(255) DEFAULT 'Helsinki-NLP/opus-mt-en-zh'")); db.session.commit()
         except:
             db.session.rollback()
 
-        # 3. 强力清理僵尸任务 (包含 running 和 created)
         stale_jobs = TrainingJob.query.filter(TrainingJob.status.in_(['running', 'created'])).all()
         for s_job in stale_jobs:
             s_job.status = 'interrupted'
             append_log(s_job.log_path, "\n[系统提示] 检测到服务重启，任务已自动中止。")
+        if stale_jobs: db.session.commit()
 
-        if stale_jobs:
-            db.session.commit()
-            print(f"\n🚀 [清理程序] 成功检测并超度了 {len(stale_jobs)} 个僵尸任务！\n")
-
-    app.run(host='0.0.0.0', port=6006, debug=True)
+    # 将运行指令移出 with 块，确保正确的生命周期管理
+    app.run(host='0.0.0.0', port=6006, debug=False, use_reloader=False)
